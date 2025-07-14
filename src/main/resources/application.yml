@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: nobilesol.api
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+    include-message: always
+  servlet:
+    context-path: /api/v1
