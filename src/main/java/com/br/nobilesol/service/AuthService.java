@@ -1,10 +1,8 @@
 package com.br.nobilesol.service;
 
-import com.br.nobilesol.dto.auth.ForgotPasswordRequestDTO;
-import com.br.nobilesol.dto.auth.LoginRequestDTO;
-import com.br.nobilesol.dto.auth.LoginResponseDTO;
-import com.br.nobilesol.dto.auth.ResetPasswordRequestDTO;
+import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.entity.RecoveryPasswordToken;
+import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.User;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.utils.JwtTokenUtil;
@@ -13,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,12 +25,16 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
     private final RecoveryPasswordService recoveryPasswordService;
+    private final RefreshTokenService refreshTokenService;
+    private final UserDetailsService userDetailsService;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, RecoveryPasswordService recoveryPasswordService) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService, UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
         this.recoveryPasswordService = recoveryPasswordService;
+        this.refreshTokenService = refreshTokenService;
+        this.userDetailsService = userDetailsService;
     }
 
     public LoginResponseDTO loginUser(LoginRequestDTO loginRequest) {
@@ -44,7 +48,8 @@ public class AuthService {
 
         User userPrincipal = (User) authentication.getPrincipal();
         String jwt = jwtTokenUtil.generateToken(userPrincipal);
-        return new LoginResponseDTO(jwt);
+        RefreshToken refreshToken = refreshTokenService.generateRefreshToken(userPrincipal.getEmail());
+        return new LoginResponseDTO(jwt, refreshToken.getToken());
     }
 
     public void sendRecoveryPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
@@ -53,7 +58,6 @@ public class AuthService {
 
         // Aqui tera o processo de envio por email, quando for implementado
         System.out.println(recoveryPasswordToken.getToken());
-        return;
     }
 
     @Transactional
@@ -74,5 +78,21 @@ public class AuthService {
         );
 
         recoveryPasswordService.deleteRecoveryPasswordToken(validToken);
+    }
+
+    @Transactional
+    public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
+         RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenRequestDTO.token());
+
+         refreshTokenService.verifyExpiration(refreshToken);
+
+         User user =  refreshToken.getUser();
+
+         String accessToken = jwtTokenUtil.generateToken(user);
+
+         refreshTokenService.deleteById(refreshToken.getId());
+         RefreshToken newRefreshToken = refreshTokenService.generateRefreshToken(user.getEmail());
+
+         return new RefreshTokenResponseDTO(accessToken, newRefreshToken.getToken());
     }
 }

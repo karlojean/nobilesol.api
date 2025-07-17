@@ -1,9 +1,6 @@
 package com.br.nobilesol.controller;
 
-import com.br.nobilesol.dto.auth.ForgotPasswordRequestDTO;
-import com.br.nobilesol.dto.auth.ResetPasswordRequestDTO;
-import com.br.nobilesol.dto.auth.LoginRequestDTO;
-import com.br.nobilesol.dto.auth.LoginResponseDTO;
+import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +38,9 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO refreshToken) {
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    }
 
 }
