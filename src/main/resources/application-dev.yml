@@ -26,6 +26,10 @@ logging:
   level:
     root: INFO
     br.com.nobilesol.api: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.transaction: TRACE
+    org.springframework.web: DEBUG
 
 jwt:
   secret: "652ca2150061c0de8f8e1927b996fafd"

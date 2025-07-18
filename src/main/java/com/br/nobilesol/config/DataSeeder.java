@@ -48,7 +48,6 @@ public class DataSeeder implements CommandLineRunner {
             Employee employeeProfile = new Employee();
 
             employeeProfile.setUser(newUser);
-            newUser.setEmployee(employeeProfile);
 
             userRepository.save(newUser);
         } else {

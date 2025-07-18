@@ -2,7 +2,7 @@ package com.br.nobilesol.entity;
 
 import com.br.nobilesol.entity.enums.UserRole;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+        import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,12 +61,6 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Employee employee;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Investor investor;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
