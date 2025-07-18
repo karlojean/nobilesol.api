@@ -26,8 +26,6 @@ logging:
   level:
     root: INFO
     br.com.nobilesol.api: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
 
 jwt:
   secret: "652ca2150061c0de8f8e1927b996fafd"
