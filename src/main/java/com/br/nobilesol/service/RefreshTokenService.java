@@ -4,6 +4,7 @@ import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.User;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.repository.RefreshTokenRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class RefreshTokenService {
 
     private static final long REFRESH_TOKEN_DURATION_MS = 24 * 60 * 60 * 1000;
 
+    @Transactional
     public RefreshToken generateRefreshToken(String email) {
         User user = userService.findEntityByEmail(email);
 
@@ -46,6 +48,7 @@ public class RefreshTokenService {
                 .orElseThrow(() -> new NobileSolApiException("Refresh token não encontrada", HttpStatus.NOT_FOUND));
     }
 
+    @Transactional
     public void deleteById(UUID id) {
         refreshTokenRepository.deleteById(id);
     }
@@ -54,6 +57,11 @@ public class RefreshTokenService {
         if(refreshToken.getExpiryDate().isBefore(Instant.now())) {
             throw new NobileSolApiException("Refresh token expirado, realize o login novamente", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @Transactional
+    public void deleteTokenByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
     }
 
     @Scheduled(fixedRate = 86400000)

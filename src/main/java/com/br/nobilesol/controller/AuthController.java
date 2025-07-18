@@ -1,9 +1,11 @@
 package com.br.nobilesol.controller;
 
 import com.br.nobilesol.dto.auth.*;
+import com.br.nobilesol.entity.User;
 import com.br.nobilesol.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,4 +45,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal User user) {
+        authService.logout(user);
+        return ResponseEntity.ok().build();
+    }
 }

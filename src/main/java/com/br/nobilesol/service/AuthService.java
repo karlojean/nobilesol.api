@@ -26,15 +26,13 @@ public class AuthService {
     private final UserService userService;
     private final RecoveryPasswordService recoveryPasswordService;
     private final RefreshTokenService refreshTokenService;
-    private final UserDetailsService userDetailsService;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService, UserDetailsService userDetailsService) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
         this.recoveryPasswordService = recoveryPasswordService;
         this.refreshTokenService = refreshTokenService;
-        this.userDetailsService = userDetailsService;
     }
 
     public LoginResponseDTO loginUser(LoginRequestDTO loginRequest) {
@@ -94,5 +92,10 @@ public class AuthService {
          RefreshToken newRefreshToken = refreshTokenService.generateRefreshToken(user.getEmail());
 
          return new RefreshTokenResponseDTO(accessToken, newRefreshToken.getToken());
+    }
+
+    @Transactional
+    public void logout(User user) {
+        refreshTokenService.deleteTokenByUser(user);
     }
 }
