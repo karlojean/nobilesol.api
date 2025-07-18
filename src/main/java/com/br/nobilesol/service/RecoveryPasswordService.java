@@ -1,16 +1,19 @@
 package com.br.nobilesol.service;
 
 import com.br.nobilesol.entity.RecoveryPasswordToken;
+import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.User;
 import com.br.nobilesol.exception.InvalidTokenException;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.exception.TokenExpiredException;
 import com.br.nobilesol.repository.RecoveryPasswordTokenRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,5 +72,14 @@ public class RecoveryPasswordService {
 
     public void deleteRecoveryPasswordToken(RecoveryPasswordToken token) {
         recoveryPasswordTokenRepository.delete(token);
+    }
+
+    @Scheduled(fixedRate = 86400000)
+    public void deleteExpiredTokens() {
+        List<RecoveryPasswordToken> expiredTokens = recoveryPasswordTokenRepository.findAllByExpiryDateBefore(Instant.now());
+
+        if (!expiredTokens.isEmpty()) {
+            recoveryPasswordTokenRepository.deleteAll(expiredTokens);
+        }
     }
 }
