@@ -3,7 +3,7 @@ package com.br.nobilesol.service;
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.entity.RecoveryPasswordToken;
 import com.br.nobilesol.entity.RefreshToken;
-import com.br.nobilesol.entity.User;
+import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
@@ -11,31 +11,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
-    private final UserService userService;
+    private final AccountService accountService;
     private final RecoveryPasswordService recoveryPasswordService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.userService = userService;
+        this.accountService = accountService;
         this.recoveryPasswordService = recoveryPasswordService;
         this.refreshTokenService = refreshTokenService;
     }
 
-    public LoginResponseDTO loginUser(LoginRequestDTO loginRequest) {
+    public LoginResponseDTO login(LoginRequestDTO loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -44,9 +39,9 @@ public class AuthService {
                 )
         );
 
-        User userPrincipal = (User) authentication.getPrincipal();
-        String jwt = jwtTokenUtil.generateToken(userPrincipal);
-        RefreshToken refreshToken = refreshTokenService.generateRefreshToken(userPrincipal.getEmail());
+        Account accountPrincipal = (Account) authentication.getPrincipal();
+        String jwt = jwtTokenUtil.generateToken(accountPrincipal);
+        RefreshToken refreshToken = refreshTokenService.generateRefreshToken(accountPrincipal.getEmail());
         return new LoginResponseDTO(jwt, refreshToken.getToken());
     }
 
@@ -67,12 +62,11 @@ public class AuthService {
             throw new NobileSolApiException("Token Invalido", HttpStatus.BAD_REQUEST);
         }
 
-        User user = validToken.getUser();
+        Account account = validToken.getAccount();
 
-        userService.changePassword(
-                user,
-                resetPasswordRequestDTO.password(),
-                resetPasswordRequestDTO.confirmPassword()
+        accountService.changePassword(
+                account,
+                resetPasswordRequestDTO.password()
         );
 
         recoveryPasswordService.deleteRecoveryPasswordToken(validToken);
@@ -84,18 +78,18 @@ public class AuthService {
 
          refreshTokenService.verifyExpiration(refreshToken);
 
-         User user =  refreshToken.getUser();
+         Account account =  refreshToken.getAccount();
 
-         String accessToken = jwtTokenUtil.generateToken(user);
+         String accessToken = jwtTokenUtil.generateToken(account);
 
          refreshTokenService.deleteById(refreshToken.getId());
-         RefreshToken newRefreshToken = refreshTokenService.generateRefreshToken(user.getEmail());
+         RefreshToken newRefreshToken = refreshTokenService.generateRefreshToken(account.getEmail());
 
          return new RefreshTokenResponseDTO(accessToken, newRefreshToken.getToken());
     }
 
     @Transactional
-    public void logout(User user) {
-        refreshTokenService.deleteTokenByUser(user);
+    public void logout(Account account) {
+        refreshTokenService.deleteTokenByAccount(account);
     }
 }

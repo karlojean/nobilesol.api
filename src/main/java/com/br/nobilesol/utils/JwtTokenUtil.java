@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.br.nobilesol.entity.User;
+import com.br.nobilesol.entity.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +24,12 @@ public class JwtTokenUtil {
 
     private static final String ISSUER = "nobilesol-api";
 
-    public String generateToken(User user) {
+    public String generateToken(Account account) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer(ISSUER)
-                    .withSubject(user.getEmail())
+                    .withSubject(account.getEmail())
                     .withIssuedAt(Instant.now())
                     .withExpiresAt(this.genExpirationDate())
                     .sign(algorithm);
@@ -38,7 +38,7 @@ public class JwtTokenUtil {
         }
     }
 
-    public String getUserEmailFromJWT(String token) {
+    public String getAccountEmailFromJWT(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)

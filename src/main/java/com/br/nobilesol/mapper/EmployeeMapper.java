@@ -6,9 +6,9 @@ import com.br.nobilesol.entity.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring", uses = {AccountMapper.class})
 public interface EmployeeMapper {
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "account", ignore = true)
     Employee toEntity(CreateEmployeeRequestDTO createEmployeeRequestDTO);
 
     EmployeeResponseDTO toResponseDTO(Employee employee);

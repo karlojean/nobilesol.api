@@ -22,8 +22,8 @@ public class Investor {
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     @Size(max = 255)
     @NotNull
@@ -38,5 +38,4 @@ public class Investor {
     @Size(max = 11)
     @Column(name = "phone_number", length = 11)
     private String phoneNumber;
-
 }

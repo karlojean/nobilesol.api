@@ -1,8 +1,8 @@
 package com.br.nobilesol.entity;
 
-import com.br.nobilesol.entity.enums.UserRole;
+import com.br.nobilesol.entity.enums.AccountRole;
 import jakarta.persistence.*;
-        import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +21,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
-public class User implements UserDetails {
+@Table(name = "account")
+public class Account implements UserDetails {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,7 +45,7 @@ public class User implements UserDetails {
 
     @Column(name = "role", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private AccountRole role;
 
     @NotNull
     @ColumnDefault("true")

@@ -1,8 +1,7 @@
 package com.br.nobilesol.service;
 
 import com.br.nobilesol.entity.RecoveryPasswordToken;
-import com.br.nobilesol.entity.RefreshToken;
-import com.br.nobilesol.entity.User;
+import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.exception.InvalidTokenException;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.exception.TokenExpiredException;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,19 +21,19 @@ public class RecoveryPasswordService {
     private static final int EXPIRE_TIME_TO_RECOVERY_MS = 60 * 1000 * 10;
     private static final int TIME_TO_NEW_REQUEST_MINUTES = 3;
 
-    private final UserService userService;
+    private final AccountService accountService;
     private final RecoveryPasswordTokenRepository recoveryPasswordTokenRepository;
 
-    public RecoveryPasswordService(UserService userService, RecoveryPasswordTokenRepository recoveryPasswordTokenRepository) {
-        this.userService = userService;
+    public RecoveryPasswordService(AccountService accountService, RecoveryPasswordTokenRepository recoveryPasswordTokenRepository) {
+        this.accountService = accountService;
         this.recoveryPasswordTokenRepository = recoveryPasswordTokenRepository;
     }
 
     public RecoveryPasswordToken generateRecoveryPassword(String email) {
-        User user = userService.findEntityByEmail(email);
+        Account account = accountService.findEntityByEmail(email);
 
-        if (recoveryPasswordTokenRepository.existsByUser(user)) {
-            RecoveryPasswordToken lastRecoveryPasswordToken = recoveryPasswordTokenRepository.getByUser(user);
+        if (recoveryPasswordTokenRepository.existsByAccount(account)) {
+            RecoveryPasswordToken lastRecoveryPasswordToken = recoveryPasswordTokenRepository.getByAccount(account);
 
             if (lastRecoveryPasswordToken.getExpiryDate().isBefore(Instant.now())){
                 recoveryPasswordTokenRepository.delete(lastRecoveryPasswordToken);
@@ -49,7 +47,7 @@ public class RecoveryPasswordService {
         }
 
         RecoveryPasswordToken recoveryPasswordToken = new RecoveryPasswordToken();
-        recoveryPasswordToken.setUser(user);
+        recoveryPasswordToken.setAccount(account);
         recoveryPasswordToken.setToken(UUID.randomUUID().toString());
         recoveryPasswordToken.setExpiryDate(Instant.now().plusMillis(EXPIRE_TIME_TO_RECOVERY_MS));
 

@@ -19,8 +19,8 @@ public class RefreshToken {
 
     }
 
-    public RefreshToken(String token, Instant expiryDate, User user) {
-        this.user = user;
+    public RefreshToken(String token, Instant expiryDate, Account account) {
+        this.account = account;
         this.token = token;
         this.expiryDate = expiryDate;
     }
@@ -31,8 +31,8 @@ public class RefreshToken {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     @NotNull
     @Column(name = "token", nullable = false, length = Integer.MAX_VALUE)

@@ -1,7 +1,7 @@
 package com.br.nobilesol.service;
 
+import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.entity.RefreshToken;
-import com.br.nobilesol.entity.User;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
@@ -11,33 +11,32 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserService userService;
+    private final AccountService accountService;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserService userService) {
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, AccountService accountService) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.userService = userService;
+        this.accountService = accountService;
     }
 
     private static final long REFRESH_TOKEN_DURATION_MS = 24 * 60 * 60 * 1000;
 
     @Transactional
     public RefreshToken generateRefreshToken(String email) {
-        User user = userService.findEntityByEmail(email);
+        Account account = accountService.findEntityByEmail(email);
 
-        refreshTokenRepository.findByUser(user)
+        refreshTokenRepository.findByAccount(account)
                 .ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshToken = new RefreshToken(
                 UUID.randomUUID().toString(),
                 Instant.now().plusMillis(REFRESH_TOKEN_DURATION_MS),
-                user
+                account
         );
 
         return refreshTokenRepository.save(refreshToken);
@@ -60,8 +59,8 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void deleteTokenByUser(User user) {
-        refreshTokenRepository.deleteByUser(user);
+    public void deleteTokenByAccount(Account account) {
+        refreshTokenRepository.deleteByAccount(account);
     }
 
     @Scheduled(fixedRate = 86400000)

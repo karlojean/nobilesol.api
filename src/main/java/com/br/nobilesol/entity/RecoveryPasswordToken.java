@@ -14,15 +14,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "recovery_password_token")
 public class RecoveryPasswordToken {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     @NotNull
     @Column(name = "token", nullable = false, length = Integer.MAX_VALUE)

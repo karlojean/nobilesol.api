@@ -1,6 +1,6 @@
 package com.br.nobilesol.entity.enums;
 
-public enum UserRole {
+public enum AccountRole {
     EMPLOYEE,
     INVESTOR
 }
