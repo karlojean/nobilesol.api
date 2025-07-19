@@ -29,4 +29,7 @@ public class Employee {
     @Size(max = 100)
     @Column(name = "department", length = 100)
     private String department;
+
+    @Column(name = "is_admin",  nullable = false)
+    private boolean isAdmin = false;
 }

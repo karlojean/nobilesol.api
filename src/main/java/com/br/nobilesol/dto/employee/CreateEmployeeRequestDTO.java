@@ -11,6 +11,8 @@ public record CreateEmployeeRequestDTO(
         AccountRequestDTO account,
 
         @NotEmpty
-        String department
+        String department,
+
+        boolean isAdmin
 ) {
 }

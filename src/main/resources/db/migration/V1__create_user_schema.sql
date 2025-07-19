@@ -23,5 +23,6 @@ CREATE TABLE employees
 (
     id         UUID PRIMARY KEY,
     account_id UUID UNIQUE NOT NULL REFERENCES account (id) ON DELETE CASCADE,
-    department VARCHAR(100)
+    department VARCHAR(100),
+    is_admin   boolean     NOT NULL DEFAULT false
 );

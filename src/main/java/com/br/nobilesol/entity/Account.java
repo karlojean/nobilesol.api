@@ -60,11 +60,22 @@ public class Account implements UserDetails {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private Employee employee;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
-    }
+        SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority("ROLE_" + this.getRole().name());
 
+        if (this.getRole() == AccountRole.EMPLOYEE && this.getEmployee() != null) {
+            if (this.getEmployee().isAdmin()) {
+                return List.of(roleAuthority, new SimpleGrantedAuthority("PERMISSION_CREATE_EMPLOYEE"));
+            }
+        }
+
+        return List.of(roleAuthority);
+    }
     @Override
     public String getPassword() {
         return this.passwordHash;

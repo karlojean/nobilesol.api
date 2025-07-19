@@ -5,6 +5,7 @@ import com.br.nobilesol.dto.employee.EmployeeResponseDTO;
 import com.br.nobilesol.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ public class EmployeeController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('PERMISSION_CREATE_EMPLOYEE')")
     public ResponseEntity<EmployeeResponseDTO> create(@RequestBody @Valid CreateEmployeeRequestDTO createEmployeeRequestDTO) {
         return ResponseEntity.ok(employeeService.create(createEmployeeRequestDTO));
     }

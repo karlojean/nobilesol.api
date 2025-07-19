@@ -35,6 +35,7 @@ public class EmployeeService {
 
         Employee employee = employeeMapper.toEntity(createEmployeeRequest);
         employee.setAccount(account);
+        account.setEmployee(employee);
 
         // Quando implementado, será enviado um email com a senha default
         System.out.println("Senha do usuário" + password);
