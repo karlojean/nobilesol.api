@@ -63,6 +63,9 @@ public class Account implements UserDetails {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Employee employee;
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private Investor investor;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
