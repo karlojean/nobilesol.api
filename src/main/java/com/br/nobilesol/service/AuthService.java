@@ -7,6 +7,7 @@ import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
+import com.br.nobilesol.mapper.AccountMapper;
 import com.br.nobilesol.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,15 @@ public class AuthService {
     private final AccountService accountService;
     private final RecoveryPasswordService recoveryPasswordService;
     private final RefreshTokenService refreshTokenService;
+    private final AccountMapper accountMapper;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService, AccountMapper accountMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.accountService = accountService;
         this.recoveryPasswordService = recoveryPasswordService;
         this.refreshTokenService = refreshTokenService;
+        this.accountMapper = accountMapper;
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
@@ -45,7 +48,7 @@ public class AuthService {
         String jwt = jwtTokenUtil.generateToken(accountPrincipal);
         RefreshToken refreshToken = refreshTokenService.generateRefreshToken(accountPrincipal.getEmail());
 
-        return new LoginResponseDTO(jwt, refreshToken.getToken());
+        return new LoginResponseDTO(jwt, refreshToken.getToken(), accountMapper.toResponseDTO(accountPrincipal));
     }
 
     public void sendRecoveryPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {

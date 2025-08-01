@@ -1,6 +1,8 @@
 package com.br.nobilesol.controller;
 
+import com.br.nobilesol.dto.account.AccountResponseDTO;
 import com.br.nobilesol.entity.Account;
+import com.br.nobilesol.mapper.AccountMapper;
 import com.br.nobilesol.repository.AccountRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
@@ -15,16 +17,16 @@ import java.util.Optional;
 @RequestMapping("/account")
 public class AccountController {
 
-    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    public AccountController(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public AccountController(AccountMapper accountMapper) {
+        this.accountMapper = accountMapper;
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Optional<Account>> getCurrentAccount() {
+    public ResponseEntity<AccountResponseDTO> getCurrentAccount() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Account currentAccount = (Account) securityContext.getAuthentication().getPrincipal();
-        return ResponseEntity.ok(accountRepository.findByEmail(currentAccount.getEmail()));
+        return ResponseEntity.ok(accountMapper.toResponseDTO(currentAccount));
     }
 }
