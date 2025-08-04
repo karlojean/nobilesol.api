@@ -1,4 +1,4 @@
-package com.br.nobilesol.service;
+package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.account.AccountRequestDTO;
 import com.br.nobilesol.entity.Account;

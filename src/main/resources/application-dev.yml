@@ -3,12 +3,24 @@ server:
   error:
     include-stacktrace: always
 
+app:
+  frontend:
+    url: http://localhost:3000
+
 spring:
   datasource:
     url: jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1
     username: sa
     password: password
     driver-class-name: org.h2.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: karlojean03@gmail.com
+    password: tdhy tzus lzsi zaxi
+    properties:
+      "mail.smtp.auth": true
+      "mail.smtp.starttls.enable": true
 
   h2:
     console:
@@ -34,3 +46,4 @@ logging:
 jwt:
   secret: "652ca2150061c0de8f8e1927b996fafd"
   expiration: 86400000 # 24 horas em milissegundos
+

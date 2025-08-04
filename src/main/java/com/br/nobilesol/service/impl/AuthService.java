@@ -1,4 +1,4 @@
-package com.br.nobilesol.service;
+package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.dto.auth.enums.PanelType;

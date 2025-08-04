@@ -2,7 +2,7 @@ package com.br.nobilesol.controller;
 
 import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
-import com.br.nobilesol.service.InvestorService;
+import com.br.nobilesol.service.impl.InvestorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

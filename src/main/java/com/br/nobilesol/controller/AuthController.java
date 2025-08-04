@@ -2,7 +2,7 @@ package com.br.nobilesol.controller;
 
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.entity.Account;
-import com.br.nobilesol.service.AuthService;
+import com.br.nobilesol.service.impl.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
