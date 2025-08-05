@@ -2,7 +2,7 @@ package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.dto.auth.enums.PanelType;
-import com.br.nobilesol.entity.RecoveryPasswordToken;
+import com.br.nobilesol.entity.ResetPasswordToken;
 import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.entity.enums.AccountRole;
@@ -22,15 +22,15 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final AccountService accountService;
-    private final RecoveryPasswordService recoveryPasswordService;
+    private final ResetPasswordService resetPasswordService;
     private final RefreshTokenService refreshTokenService;
     private final AccountMapper accountMapper;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, RecoveryPasswordService recoveryPasswordService, RefreshTokenService refreshTokenService, AccountMapper accountMapper) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, ResetPasswordService resetPasswordService, RefreshTokenService refreshTokenService, AccountMapper accountMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.accountService = accountService;
-        this.recoveryPasswordService = recoveryPasswordService;
+        this.resetPasswordService = resetPasswordService;
         this.refreshTokenService = refreshTokenService;
         this.accountMapper = accountMapper;
     }
@@ -51,18 +51,18 @@ public class AuthService {
         return new LoginResponseDTO(jwt, refreshToken.getToken(), accountMapper.toResponseDTO(accountPrincipal));
     }
 
-    public void sendRecoveryPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
-        RecoveryPasswordToken recoveryPasswordToken = recoveryPasswordService
-                .generateRecoveryPassword(forgotPasswordRequestDTO.email());
+    public void sendResetPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
+        ResetPasswordToken resetPasswordToken = resetPasswordService
+                .generateResetPassword(forgotPasswordRequestDTO.email());
 
         // Aqui tera o processo de envio por email, quando for implementado
-        System.out.println(recoveryPasswordToken.getToken());
+        System.out.println(resetPasswordToken.getToken());
     }
 
     @Transactional
     public void resetPassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
 
-       RecoveryPasswordToken validToken = recoveryPasswordService.validateRecoveryPasswordToken(resetPasswordRequestDTO.token());
+       ResetPasswordToken validToken = resetPasswordService.validateResetPasswordToken(resetPasswordRequestDTO.token());
 
         if (validToken == null) {
             throw new NobileSolApiException("Token Invalido", HttpStatus.BAD_REQUEST);
@@ -75,7 +75,7 @@ public class AuthService {
                 resetPasswordRequestDTO.password()
         );
 
-        recoveryPasswordService.deleteRecoveryPasswordToken(validToken);
+        resetPasswordService.deleteResetPasswordToken(validToken);
     }
 
     @Transactional

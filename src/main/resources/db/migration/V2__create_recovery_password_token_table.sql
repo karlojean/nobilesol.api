@@ -1,4 +1,4 @@
-CREATE TABLE recovery_password_token
+CREATE TABLE reset_password_token
 (
     id UUID NOT NULL PRIMARY KEY,
     account_id UUID NOT NULL,

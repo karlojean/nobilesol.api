@@ -28,7 +28,7 @@ public class AuthController {
     public ResponseEntity<Void> forgotPassword(
             @RequestBody @Valid ForgotPasswordRequestDTO forgotPasswordRequestDTO)
     {
-        authService.sendRecoveryPasswordToken(forgotPasswordRequestDTO);
+        authService.sendResetPasswordToken(forgotPasswordRequestDTO);
         return ResponseEntity.ok().build();
     }
 

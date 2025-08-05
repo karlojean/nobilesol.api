@@ -12,8 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "recovery_password_token")
-public class RecoveryPasswordToken {
+@Table(name = "reset_password_token")
+public class ResetPasswordToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
