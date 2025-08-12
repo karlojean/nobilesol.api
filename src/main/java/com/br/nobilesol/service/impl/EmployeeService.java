@@ -50,7 +50,7 @@ public class EmployeeService {
         Employee createdEmployee = employeeRepository.save(employee);
 
         EmployeeCreatedEvent event = new EmployeeCreatedEvent(
-                createdEmployee.getAccount().getName(),
+                createdEmployee.getFirstName(),
                 createdEmployee.getAccount().getEmail(),
                 temporaryPassword
         );

@@ -6,7 +6,8 @@ import java.util.UUID;
 
 public record InvestorResponseDTO(
         UUID id,
-        String fullName,
+        String firstName,
+        String lastName,
         String documentNumber,
         String phoneNumber,
         AccountResponseDTO account

@@ -33,11 +33,6 @@ public class Account implements UserDetails {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Size(max = 30)
-    @NotNull
-    @Column(name = "name", nullable = false, length = 30)
-    private String name;
-
     @Size(max = 255)
     @NotNull
     @Column(name = "password_hash", nullable = false)
@@ -65,7 +60,6 @@ public class Account implements UserDetails {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Investor investor;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

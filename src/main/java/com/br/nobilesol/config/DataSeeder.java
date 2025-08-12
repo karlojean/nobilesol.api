@@ -40,7 +40,6 @@ public class DataSeeder implements CommandLineRunner {
 
             Account newAccount = new Account();
             newAccount.setEmail("default@employee.com");
-            newAccount.setName("Default Account");
             newAccount.setPasswordHash(passwordEncoder.encode("secret"));
             newAccount.setRole(AccountRole.EMPLOYEE);
             newAccount.setIsActive(true);
@@ -48,6 +47,9 @@ public class DataSeeder implements CommandLineRunner {
             Employee employeeProfile = new Employee();
 
             employeeProfile.setAccount(newAccount);
+            employeeProfile.setFirstName("Jean");
+            employeeProfile.setLastName("Karlo Firmino Coelho");
+
             newAccount.setEmployee(employeeProfile);
             employeeProfile.setAdmin(true);
 

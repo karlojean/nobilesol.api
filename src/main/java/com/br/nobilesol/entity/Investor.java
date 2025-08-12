@@ -5,9 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -26,10 +29,15 @@ public class Investor {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
     @Size(max = 255)
     @NotNull
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Size(max = 14)
     @NotNull
@@ -39,4 +47,12 @@ public class Investor {
     @Size(max = 11)
     @Column(name = "phone_number", length = 11)
     private String phoneNumber;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 }

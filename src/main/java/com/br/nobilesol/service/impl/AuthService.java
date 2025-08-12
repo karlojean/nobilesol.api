@@ -1,5 +1,6 @@
 package com.br.nobilesol.service.impl;
 
+import com.br.nobilesol.dto.account.AccountResponseDTO;
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.dto.auth.enums.PanelType;
 import com.br.nobilesol.entity.ResetPasswordToken;
@@ -24,15 +25,13 @@ public class AuthService {
     private final AccountService accountService;
     private final ResetPasswordService resetPasswordService;
     private final RefreshTokenService refreshTokenService;
-    private final AccountMapper accountMapper;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, ResetPasswordService resetPasswordService, RefreshTokenService refreshTokenService, AccountMapper accountMapper) {
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, ResetPasswordService resetPasswordService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.accountService = accountService;
         this.resetPasswordService = resetPasswordService;
         this.refreshTokenService = refreshTokenService;
-        this.accountMapper = accountMapper;
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
@@ -48,7 +47,14 @@ public class AuthService {
         String jwt = jwtTokenUtil.generateToken(accountPrincipal);
         RefreshToken refreshToken = refreshTokenService.generateRefreshToken(accountPrincipal.getEmail());
 
-        return new LoginResponseDTO(jwt, refreshToken.getToken(), accountMapper.toResponseDTO(accountPrincipal));
+        AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
+                accountPrincipal.getId(),
+                accountService.getDisplayName(accountPrincipal.getId(), accountPrincipal.getRole()),
+                accountPrincipal.getEmail(),
+                accountPrincipal.getRole()
+        );
+
+        return new LoginResponseDTO(jwt, refreshToken.getToken(), accountResponseDTO);
     }
 
     public void sendResetPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
