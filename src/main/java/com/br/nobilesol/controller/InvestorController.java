@@ -1,15 +1,15 @@
 package com.br.nobilesol.controller;
 
+import com.br.nobilesol.dto.PageResponseDTO;
 import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.service.impl.InvestorService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/investor")
@@ -25,5 +25,16 @@ public class InvestorController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> create(@RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO) {
         return ResponseEntity.ok(investorService.create(createInvestorRequestDTO));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<PageResponseDTO<InvestorResponseDTO>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String filter
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(investorService.getAll(filter, pageable));
     }
 }

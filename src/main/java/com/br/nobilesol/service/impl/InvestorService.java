@@ -1,5 +1,6 @@
 package com.br.nobilesol.service.impl;
 
+import com.br.nobilesol.dto.PageResponseDTO;
 import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.entity.Account;
@@ -9,6 +10,8 @@ import com.br.nobilesol.mapper.InvestorMapper;
 import com.br.nobilesol.repository.InvestorRepository;
 import com.br.nobilesol.utils.RandomPasswordGenerator;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -42,5 +45,13 @@ public class InvestorService {
         System.out.println("Senha do usuário" + password);
 
         return investorMapper.toResponseDTO(investorRepository.save(investor));
+    }
+
+    @Transactional
+    public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
+        Page<Investor> investors = investorRepository.findByFullNameContainingIgnoreCase(filter, pageable);
+        Page<InvestorResponseDTO> dtoPage = investors.map(investorMapper::toResponseDTO);
+
+        return PageResponseDTO.from(dtoPage);
     }
 }
