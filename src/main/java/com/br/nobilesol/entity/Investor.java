@@ -1,5 +1,6 @@
 package com.br.nobilesol.entity;
 
+import com.br.nobilesol.entity.enums.InvestorType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,36 +24,43 @@ public class Investor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "investor_type", nullable = false, length = 10)
+    private InvestorType investorType;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Size(max = 14)
-    @NotNull
-    @Column(name = "document_number", nullable = false, length = 14)
+    @Column(name = "company_name")
+    private String companyName;
+
+    @Column(name = "trade_name")
+    private String tradeName;
+
+    @Column(name = "document_number", nullable = false, unique = true, length = 14)
     private String documentNumber;
 
-    @Size(max = 11)
     @Column(name = "phone_number", length = 11)
     private String phoneNumber;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public String getDisplayName() {
+        if (investorType == InvestorType.PF) {
+            return name;
+        }
+
+        return tradeName;
+    }
 }

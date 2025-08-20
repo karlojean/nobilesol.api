@@ -1,10 +1,10 @@
 package com.br.nobilesol.dto.auth;
 
-import com.br.nobilesol.dto.account.AccountResponseDTO;
+import com.br.nobilesol.dto.account.CurrentAccountResponseDTO;
 
 public record LoginResponseDTO(
         String accessToken,
         String refreshToken,
-        AccountResponseDTO account
+        CurrentAccountResponseDTO account
 ) {
 }

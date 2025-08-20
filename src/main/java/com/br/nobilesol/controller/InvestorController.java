@@ -7,6 +7,7 @@ import com.br.nobilesol.service.impl.InvestorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class InvestorController {
     @PostMapping()
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> create(@RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO) {
-        return ResponseEntity.ok(investorService.create(createInvestorRequestDTO));
+        return new ResponseEntity<>(investorService.create(createInvestorRequestDTO), HttpStatus.CREATED);
     }
 
     @GetMapping

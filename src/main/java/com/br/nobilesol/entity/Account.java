@@ -73,6 +73,7 @@ public class Account implements UserDetails {
 
         return List.of(roleAuthority);
     }
+
     @Override
     public String getPassword() {
         return this.passwordHash;

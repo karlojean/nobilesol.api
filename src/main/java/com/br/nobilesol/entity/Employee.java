@@ -53,4 +53,8 @@ public class Employee {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public String getDisplayName() {
+        return firstName + " " + lastName;
+    }
 }

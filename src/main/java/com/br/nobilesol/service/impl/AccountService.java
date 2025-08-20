@@ -1,15 +1,11 @@
 package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.account.AccountRequestDTO;
-import com.br.nobilesol.dto.account.AccountResponseDTO;
+import com.br.nobilesol.dto.account.CurrentAccountResponseDTO;
 import com.br.nobilesol.entity.Account;
-import com.br.nobilesol.entity.Employee;
-import com.br.nobilesol.entity.Investor;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.repository.AccountRepository;
-import com.br.nobilesol.repository.EmployeeRepository;
-import com.br.nobilesol.repository.InvestorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -24,14 +20,10 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final InvestorRepository investorRepository;
-    private final EmployeeRepository employeeRepository;
 
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, InvestorRepository investorRepository, EmployeeRepository employeeRepository) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
-        this.investorRepository = investorRepository;
-        this.employeeRepository = employeeRepository;
     }
 
     @Transactional
@@ -49,10 +41,10 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
-    public AccountResponseDTO getCurrentAccount(Account account) {
-        String displayName = getDisplayName(account.getId(), account.getRole());
+    public CurrentAccountResponseDTO getCurrentAccount(Account account) {
+        String displayName = getDisplayName(account);
 
-        return new AccountResponseDTO(
+        return new CurrentAccountResponseDTO(
                 account.getId(),
                 displayName,
                 account.getEmail(),
@@ -71,19 +63,11 @@ public class AccountService {
         );
     }
 
-    public boolean accountExistsWithEmail(String email) {
-        return accountRepository.existsByEmail(email);
-    }
-
-    public String getDisplayName(UUID accountId, AccountRole role) {
-        return switch (role) {
-            case INVESTOR -> investorRepository.findByAccountId(accountId)
-                    .map(Investor::getFirstName)
-                    .orElse(null);
-            case EMPLOYEE -> employeeRepository.findByAccountId(accountId)
-                    .map(Employee::getFirstName)
-                    .orElse(null);
-            default -> null;
+    public String getDisplayName(Account account) {
+        return switch (account.getRole()) {
+            case EMPLOYEE -> account.getEmployee().getDisplayName();
+            case INVESTOR -> account.getInvestor().getDisplayName();
         };
     }
+
 }

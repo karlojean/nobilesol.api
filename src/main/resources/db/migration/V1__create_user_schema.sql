@@ -13,9 +13,11 @@ CREATE TABLE investors
 (
     id              UUID PRIMARY KEY,
     account_id      UUID UNIQUE  NOT NULL REFERENCES account (id) ON DELETE CASCADE,
-    first_name      VARCHAR(50) NOT NULL,
-    last_name       VARCHAR(255) NOT NULL,
-    document_number VARCHAR(14)  NOT NULL,
+    investor_type VARCHAR(10) NOT NULL CHECK ( investor_type IN ('PF', 'PJ') ),
+    document_number VARCHAR(14)  NOT NULL UNIQUE,
+    name            VARCHAR(255),
+    company_name VARCHAR(255),
+    trade_name VARCHAR(255),
     phone_number    VARCHAR(11),
     created_at    TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at    TIMESTAMP WITH TIME ZONE NOT NULL

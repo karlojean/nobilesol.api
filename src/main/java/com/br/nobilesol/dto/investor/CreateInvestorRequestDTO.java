@@ -1,28 +1,24 @@
 package com.br.nobilesol.dto.investor;
 
 import com.br.nobilesol.dto.account.AccountRequestDTO;
+import com.br.nobilesol.entity.enums.InvestorType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateInvestorRequestDTO(
-        @NotNull
-        @Valid
-        AccountRequestDTO account,
+        @NotNull(message = "O tipo de investidor (PF ou PJ) é obrigatório")
+        InvestorType investorType,
 
-        @NotEmpty
-        @Size(min = 1, max = 50)
-        String firstName,
-
-        @NotEmpty
-        @Size(min = 1, max = 255)
-        String lastName,
-
-        @NotEmpty
+        @NotNull(message = "O número do documento é obrigatório")
         String documentNumber,
+        String name,
+        String companyName,
+        String tradeName,
+        String phoneNumber,
 
-        @Size(max = 11)
-        String phoneNumber
+        @NotNull @Valid
+        AccountRequestDTO account
 ) {
 }

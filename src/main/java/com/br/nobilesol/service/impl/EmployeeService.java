@@ -54,6 +54,7 @@ public class EmployeeService {
                 createdEmployee.getAccount().getEmail(),
                 temporaryPassword
         );
+
         eventPublisher.publishEvent(event);
 
         return employeeMapper.toResponseDTO(createdEmployee);

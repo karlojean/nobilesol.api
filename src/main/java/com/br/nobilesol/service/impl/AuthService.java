@@ -1,6 +1,7 @@
 package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.account.AccountResponseDTO;
+import com.br.nobilesol.dto.account.CurrentAccountResponseDTO;
 import com.br.nobilesol.dto.auth.*;
 import com.br.nobilesol.dto.auth.enums.PanelType;
 import com.br.nobilesol.entity.ResetPasswordToken;
@@ -47,14 +48,16 @@ public class AuthService {
         String jwt = jwtTokenUtil.generateToken(accountPrincipal);
         RefreshToken refreshToken = refreshTokenService.generateRefreshToken(accountPrincipal.getEmail());
 
-        AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
+        String displayName = accountService.getDisplayName(accountPrincipal);
+
+       CurrentAccountResponseDTO currentAccount = new CurrentAccountResponseDTO(
                 accountPrincipal.getId(),
-                accountService.getDisplayName(accountPrincipal.getId(), accountPrincipal.getRole()),
+                displayName,
                 accountPrincipal.getEmail(),
                 accountPrincipal.getRole()
         );
 
-        return new LoginResponseDTO(jwt, refreshToken.getToken(), accountResponseDTO);
+        return new LoginResponseDTO(jwt, refreshToken.getToken(), currentAccount);
     }
 
     public void sendResetPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {

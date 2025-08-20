@@ -4,8 +4,9 @@ import com.br.nobilesol.entity.enums.AccountRole;
 
 import java.util.UUID;
 
-public record AccountResponseDTO(
+public record CurrentAccountResponseDTO (
         UUID id,
+        String name,
         String email,
         AccountRole role
 ) {

@@ -68,7 +68,6 @@ public class EmployeeServiceTest {
             AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
                     UUID.randomUUID(),
                     "John",
-                    "john.doe@gmail.com",
                     AccountRole.EMPLOYEE
             );
 
