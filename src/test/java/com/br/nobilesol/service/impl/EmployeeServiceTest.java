@@ -19,6 +19,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,7 +69,9 @@ public class EmployeeServiceTest {
             AccountResponseDTO accountResponseDTO = new AccountResponseDTO(
                     UUID.randomUUID(),
                     "John",
-                    AccountRole.EMPLOYEE
+                    AccountRole.EMPLOYEE,
+                    true,
+                    Instant.now()
             );
 
             EmployeeResponseDTO responseDTO = new EmployeeResponseDTO(

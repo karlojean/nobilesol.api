@@ -61,7 +61,7 @@ public class InvestorService {
 
     @Transactional
     public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
-        Page<Investor> investors = investorRepository.findByNameContainingIgnoreCase(filter, pageable);
+        Page<Investor> investors = investorRepository.search(filter, pageable);
         Page<InvestorResponseDTO> dtoPage = investors.map(investorMapper::toResponseDTO);
 
         return PageResponseDTO.from(dtoPage);
