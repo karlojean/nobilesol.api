@@ -3,6 +3,7 @@ package com.br.nobilesol.service.impl;
 import com.br.nobilesol.dto.PageResponseDTO;
 import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
+import com.br.nobilesol.dto.investor.UpdateInvestorRequestDTO;
 import com.br.nobilesol.entity.Account;
 import com.br.nobilesol.entity.Investor;
 import com.br.nobilesol.entity.enums.AccountRole;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 
 @Service
@@ -60,10 +63,25 @@ public class InvestorService {
     }
 
     @Transactional
+    public InvestorResponseDTO updateInvestor(UUID id, UpdateInvestorRequestDTO request) {
+        Investor investor = this.getEntityById(id);
+
+        investorMapper.updateInvestorFromDto(request, investor);
+
+        Investor savedInvestor = investorRepository.save(investor);
+        return investorMapper.toResponseDTO(savedInvestor);
+    }
+
+    @Transactional
     public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
         Page<Investor> investors = investorRepository.search(filter, pageable);
         Page<InvestorResponseDTO> dtoPage = investors.map(investorMapper::toResponseDTO);
 
         return PageResponseDTO.from(dtoPage);
+    }
+
+    public Investor getEntityById(UUID id) {
+        return investorRepository.findById(id)
+                .orElseThrow(() -> new NobileSolApiException("Investidor não encontrado com ID: " + id, HttpStatus.NOT_FOUND));
     }
 }
