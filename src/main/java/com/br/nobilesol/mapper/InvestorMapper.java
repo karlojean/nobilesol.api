@@ -4,25 +4,42 @@ import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.dto.investor.UpdateInvestorRequestDTO;
 import com.br.nobilesol.entity.Investor;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import com.br.nobilesol.entity.enums.InvestorType;
+import jakarta.validation.ValidationException;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {
-        AccountMapper.class
-})
+import java.util.List;
+
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.WARN,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        uses = {AccountMapper.class}
+)
 public interface InvestorMapper {
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "account", ignore = true)
     Investor toEntity(CreateInvestorRequestDTO dto);
 
     InvestorResponseDTO toResponseDTO(Investor investor);
 
+    List<InvestorResponseDTO> toResponseDTOList(List<Investor> investors);
+
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "account", ignore = true)
+    @Mapping(target = "investorType", ignore = true)
     @Mapping(target = "documentNumber", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void updateInvestorFromDto(UpdateInvestorRequestDTO request, @MappingTarget Investor investor);
+    @Mapping(target = "account", ignore = true)
+    void updateInvestorFromDTO(UpdateInvestorRequestDTO updateDTO, @MappingTarget Investor investor);
+
+    @AfterMapping
+    default void validateAndNormalizeFields(@MappingTarget Investor investor, UpdateInvestorRequestDTO updateDTO) {
+        validateFieldsByInvestorType(investor, updateDTO);
+    }
+
+
 }
 

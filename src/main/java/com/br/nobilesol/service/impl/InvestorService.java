@@ -10,14 +10,17 @@ import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.mapper.InvestorMapper;
 import com.br.nobilesol.repository.InvestorRepository;
-import com.br.nobilesol.service.impl.validation.InvestorValidatorService;
 import com.br.nobilesol.utils.RandomPasswordGenerator;
+import com.br.nobilesol.validation.validators.InvestorValidator;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -26,33 +29,27 @@ public class InvestorService {
     private final InvestorMapper investorMapper;
     private final InvestorRepository investorRepository;
     private final AccountService accountService;
-    private final InvestorValidatorService investorValidatorService;
+    private final InvestorValidator investorValidator;
 
-    public InvestorService(InvestorMapper investorMapper, InvestorRepository investorRepository, AccountService accountService, InvestorValidatorService investorValidatorService, InvestorValidatorService investorValidatorService1) {
+    public InvestorService(InvestorMapper investorMapper, InvestorRepository investorRepository, AccountService accountService, InvestorValidator investorValidator) {
         this.investorMapper = investorMapper;
         this.investorRepository = investorRepository;
         this.accountService = accountService;
-        this.investorValidatorService = investorValidatorService1;
+        this.investorValidator = investorValidator;
     }
 
     @Transactional
     public InvestorResponseDTO create(CreateInvestorRequestDTO createInvestorRequestDTO) {
+        investorValidator.validateForCreation(createInvestorRequestDTO);
 
-        if (investorRepository.existsByDocumentNumber(createInvestorRequestDTO.documentNumber())) {
-            throw new NobileSolApiException("Número de documento já está a ser utilizado por outro investidor.", HttpStatus.BAD_REQUEST);
-        }
-
-        investorValidatorService.validateCreateRequest(createInvestorRequestDTO);
+        Investor investor = investorMapper.toEntity(createInvestorRequestDTO);
 
         String password = RandomPasswordGenerator.generatePassword(10);
-
         Account account = accountService.createAccount(
                 createInvestorRequestDTO.account(),
                 AccountRole.INVESTOR,
                 password
         );
-
-        Investor investor = investorMapper.toEntity(createInvestorRequestDTO);
         investor.setAccount(account);
         account.setInvestor(investor);
 
@@ -63,16 +60,20 @@ public class InvestorService {
     }
 
     @Transactional
-    public InvestorResponseDTO updateInvestor(UUID id, UpdateInvestorRequestDTO request) {
-        Investor investor = this.getEntityById(id);
+    public InvestorResponseDTO updateInvestor(UUID id, UpdateInvestorRequestDTO updateDTO) {
+        Investor existingInvestor = getEntityById(id);
 
-        investorMapper.updateInvestorFromDto(request, investor);
+        investorValidator.validateForUpdate(existingInvestor, updateDTO);
 
-        Investor savedInvestor = investorRepository.save(investor);
+        investorMapper.updateInvestorFromDTO(updateDTO, existingInvestor);
+        Investor savedInvestor = investorRepository.save(existingInvestor);
+
+
         return investorMapper.toResponseDTO(savedInvestor);
     }
 
-    @Transactional
+
+    @Transactional()
     public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
         Page<Investor> investors = investorRepository.search(filter, pageable);
         Page<InvestorResponseDTO> dtoPage = investors.map(investorMapper::toResponseDTO);

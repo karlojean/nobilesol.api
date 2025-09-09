@@ -15,6 +15,7 @@ public record InvestorResponseDTO(
         String documentNumber,
         String phoneNumber,
         AccountResponseDTO account,
+        Instant updatedAt,
         Instant createdAt
 ) {
 }

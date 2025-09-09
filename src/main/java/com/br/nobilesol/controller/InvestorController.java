@@ -6,7 +6,6 @@ import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.dto.investor.UpdateInvestorRequestDTO;
 import com.br.nobilesol.service.impl.InvestorService;
 import jakarta.validation.Valid;
-import org.hibernate.sql.Update;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,8 @@ public class InvestorController {
         return new ResponseEntity<>(investorService.create(createInvestorRequestDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> updateInvestor(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateInvestorRequestDTO request) {
