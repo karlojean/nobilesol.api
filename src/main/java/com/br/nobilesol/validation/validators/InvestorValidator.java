@@ -6,7 +6,6 @@ import com.br.nobilesol.entity.Investor;
 import com.br.nobilesol.entity.enums.InvestorType;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.repository.InvestorRepository;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ public class InvestorValidator {
         }
 
         validateInvestorTypeConsistency(
-                request.investorType(),
+                request.type(),
                 request.name(),
                 request.companyName(),
                 request.tradeName()
@@ -38,7 +37,7 @@ public class InvestorValidator {
         String finalName = request.name() != null ? request.name() : existingInvestor.getName();
 
         validateInvestorTypeConsistency(
-                existingInvestor.getInvestorType(),
+                existingInvestor.getType(),
                 finalName,
                 finalCompanyName,
                 finalTradeName
@@ -47,11 +46,11 @@ public class InvestorValidator {
 
 
     private void validateInvestorTypeConsistency(InvestorType type, String name, String companyName, String tradeName) {
-        if (type == InvestorType.PJ) {
+        if (type == InvestorType.COMPANY) {
             if (!StringUtils.hasText(companyName)) {
                 throw new NobileSolApiException("Razão Social é obrigatória para Pessoa Jurídica.", HttpStatus.BAD_REQUEST);
             }
-        } else if (type == InvestorType.PF) {
+        } else if (type == InvestorType.INDIVIDUAL) {
             if (!StringUtils.hasText(name)) {
                 throw new NobileSolApiException("Nome é obrigatório para Pessoa Física.", HttpStatus.BAD_REQUEST);
             }

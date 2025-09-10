@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record InvestorResponseDTO(
         UUID id,
-        InvestorType investorType,
+        InvestorType type,
         String name,
         String companyName,
         String tradeName,

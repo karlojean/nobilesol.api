@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateInvestorRequestDTO(
         @NotNull(message = "O tipo de investidor (PF ou PJ) é obrigatório")
-        InvestorType investorType,
+        InvestorType type,
 
         @NotNull(message = "O número do documento é obrigatório")
         String documentNumber,

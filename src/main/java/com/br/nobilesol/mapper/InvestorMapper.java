@@ -28,18 +28,12 @@ public interface InvestorMapper {
     List<InvestorResponseDTO> toResponseDTOList(List<Investor> investors);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "investorType", ignore = true)
+    @Mapping(target = "type", ignore = true)
     @Mapping(target = "documentNumber", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "account", ignore = true)
     void updateInvestorFromDTO(UpdateInvestorRequestDTO updateDTO, @MappingTarget Investor investor);
-
-    @AfterMapping
-    default void validateAndNormalizeFields(@MappingTarget Investor investor, UpdateInvestorRequestDTO updateDTO) {
-        validateFieldsByInvestorType(investor, updateDTO);
-    }
-
 
 }
 

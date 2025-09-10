@@ -1,7 +1,6 @@
 package com.br.nobilesol.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,41 +8,37 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity
-@Table(name = "refresh_token")
+@Table(name = "refresh_tokens",
+        indexes = @Index(name="idx_refresh_tokens_account", columnList="account_id"))
 public class RefreshToken {
-
-    public RefreshToken() {
-
-    }
-
-    public RefreshToken(String token, Instant expiryDate, Account account) {
-        this.account = account;
-        this.token = token;
-        this.expiryDate = expiryDate;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "account_id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_refresh_tokens_account"))
     private Account account;
 
-    @NotNull
-    @Column(name = "token", nullable = false, length = Integer.MAX_VALUE)
-    private String token;
+    @Column(name = "token_hash", nullable = false, unique = true, columnDefinition = "text")
+    private String tokenHash;
 
-    @NotNull
-    @Column(name = "expiry_date", nullable = false)
-    private Instant expiryDate;
+    @Column(name = "expires_at", nullable = false)
+    private Instant expiresAt;
+
+    @Column(name = "revoked_at")
+    private Instant revokedAt;
+
+    @Column(name = "user_agent")
+    private String userAgent;
+
+    @Column(name = "ip_address")
+    private String ipAddress;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-
 }

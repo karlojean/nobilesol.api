@@ -2,8 +2,8 @@ package com.br.nobilesol.service.impl;
 
 import com.br.nobilesol.dto.employee.CreateEmployeeRequestDTO;
 import com.br.nobilesol.dto.employee.EmployeeResponseDTO;
-import com.br.nobilesol.entity.Employee;
 import com.br.nobilesol.entity.Account;
+import com.br.nobilesol.entity.Employee;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.event.EmployeeCreatedEvent;
 import com.br.nobilesol.mapper.EmployeeMapper;
@@ -14,19 +14,22 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.UUID;
 
 @Service
 public class EmployeeService {
+
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
     private final AccountService accountService;
     private final EmailService emailService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public EmployeeService(EmployeeMapper employeeMapper, EmployeeRepository employeeRepository, AccountService accountService, EmailService emailService, ApplicationEventPublisher eventPublisher) {
+    public EmployeeService(EmployeeMapper employeeMapper,
+                           EmployeeRepository employeeRepository,
+                           AccountService accountService,
+                           EmailService emailService,
+                           ApplicationEventPublisher eventPublisher) {
         this.employeeMapper = employeeMapper;
         this.employeeRepository = employeeRepository;
         this.accountService = accountService;
@@ -35,28 +38,30 @@ public class EmployeeService {
     }
 
     @Transactional
-    public EmployeeResponseDTO create(CreateEmployeeRequestDTO createEmployeeRequest) {
-        String temporaryPassword = RandomPasswordGenerator.generatePassword(10);
+    public EmployeeResponseDTO create(CreateEmployeeRequestDTO req) {
+        String tempPassword = RandomPasswordGenerator.generatePassword(10);
         Account account = accountService.createAccount(
-                createEmployeeRequest.account(),
+                req.account(),
                 AccountRole.EMPLOYEE,
-                temporaryPassword
+                tempPassword
         );
 
-        Employee employee = employeeMapper.toEntity(createEmployeeRequest);
+        Employee employee = employeeMapper.toEntity(req);
         employee.setAccount(account);
         account.setEmployee(employee);
 
-        Employee createdEmployee = employeeRepository.save(employee);
+        Employee created = employeeRepository.save(employee);
 
         EmployeeCreatedEvent event = new EmployeeCreatedEvent(
-                createdEmployee.getFirstName(),
-                createdEmployee.getAccount().getEmail(),
-                temporaryPassword
+                created.getName(),
+                created.getAccount().getEmail(),
+                tempPassword
         );
-
         eventPublisher.publishEvent(event);
 
-        return employeeMapper.toResponseDTO(createdEmployee);
+        // TODO: usar emailService para disparar credenciais, se/ quando implementar
+        // emailService.sendEmployeeWelcome(created.getAccount().getEmail(), created.getName(), tempPassword);
+
+        return employeeMapper.toResponseDTO(created);
     }
 }

@@ -1,15 +1,18 @@
 package com.br.nobilesol.service.impl;
 
-import com.br.nobilesol.dto.account.AccountResponseDTO;
 import com.br.nobilesol.dto.account.CurrentAccountResponseDTO;
-import com.br.nobilesol.dto.auth.*;
+import com.br.nobilesol.dto.auth.ForgotPasswordRequestDTO;
+import com.br.nobilesol.dto.auth.LoginRequestDTO;
+import com.br.nobilesol.dto.auth.LoginResponseDTO;
+import com.br.nobilesol.dto.auth.RefreshTokenRequestDTO;
+import com.br.nobilesol.dto.auth.RefreshTokenResponseDTO;
+import com.br.nobilesol.dto.auth.ResetPasswordRequestDTO;
 import com.br.nobilesol.dto.auth.enums.PanelType;
-import com.br.nobilesol.entity.ResetPasswordToken;
-import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.Account;
+import com.br.nobilesol.entity.RefreshToken;
+import com.br.nobilesol.entity.ResetPasswordToken;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
-import com.br.nobilesol.mapper.AccountMapper;
 import com.br.nobilesol.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 public class AuthService {
@@ -27,7 +32,13 @@ public class AuthService {
     private final ResetPasswordService resetPasswordService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, AccountService accountService, ResetPasswordService resetPasswordService, RefreshTokenService refreshTokenService) {
+    public AuthService(
+            AuthenticationManager authenticationManager,
+            JwtTokenUtil jwtTokenUtil,
+            AccountService accountService,
+            ResetPasswordService resetPasswordService,
+            RefreshTokenService refreshTokenService
+    ) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.accountService = accountService;
@@ -36,84 +47,97 @@ public class AuthService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
+        String email = normalizeEmail(loginRequest.email());
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.email(),
-                        loginRequest.password()
-                )
+                new UsernamePasswordAuthenticationToken(email, loginRequest.password())
         );
 
         Account accountPrincipal = (Account) authentication.getPrincipal();
+
         validatePanelAccess(loginRequest.panel(), accountPrincipal.getRole());
+
         String jwt = jwtTokenUtil.generateToken(accountPrincipal);
-        RefreshToken refreshToken = refreshTokenService.generateRefreshToken(accountPrincipal.getEmail());
 
-        String displayName = accountService.getDisplayName(accountPrincipal);
+        String rawRefreshToken = refreshTokenService.generateRefreshToken(accountPrincipal);
 
-       CurrentAccountResponseDTO currentAccount = new CurrentAccountResponseDTO(
+        String displayName = accountService.resolveDisplayName(accountPrincipal);
+
+        CurrentAccountResponseDTO currentAccount = new CurrentAccountResponseDTO(
                 accountPrincipal.getId(),
                 displayName,
                 accountPrincipal.getEmail(),
                 accountPrincipal.getRole()
         );
 
-        return new LoginResponseDTO(jwt, refreshToken.getToken(), currentAccount);
+        return new LoginResponseDTO(jwt, rawRefreshToken, currentAccount);
     }
 
-    public void sendResetPasswordToken(ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
-        ResetPasswordToken resetPasswordToken = resetPasswordService
-                .generateResetPassword(forgotPasswordRequestDTO.email());
+    public void sendResetPasswordToken(ForgotPasswordRequestDTO dto) {
+        String email = normalizeEmail(dto.email());
 
-        // Aqui tera o processo de envio por email, quando for implementado
-        System.out.println(resetPasswordToken.getToken());
+
+        String rawToken = resetPasswordService.generateResetPassword(email);
+
+        // TODO: enviar por e-mail (usar SmtpEmailService)
+        // Ex.: emailService.sendResetLink(email, rawToken);
+        // (Evite logar o raw token em produção)
+        System.out.println("[DEBUG] reset token (RAW): " + rawToken);
     }
 
     @Transactional
-    public void resetPassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
-
-       ResetPasswordToken validToken = resetPasswordService.validateResetPasswordToken(resetPasswordRequestDTO.token());
-
+    public void resetPassword(ResetPasswordRequestDTO dto) {
+        ResetPasswordToken validToken = resetPasswordService.validateResetPasswordToken(dto.token());
         if (validToken == null) {
-            throw new NobileSolApiException("Token Invalido", HttpStatus.BAD_REQUEST);
+            throw new NobileSolApiException("Token inválido", HttpStatus.BAD_REQUEST);
         }
 
         Account account = validToken.getAccount();
-
-        accountService.changePassword(
-                account,
-                resetPasswordRequestDTO.password()
-        );
+        accountService.changePassword(account, dto.password());
 
         resetPasswordService.deleteResetPasswordToken(validToken);
     }
 
+    // ========= REFRESH TOKEN =========
     @Transactional
-    public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
-         RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenRequestDTO.token());
+    public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO dto) {
+        RefreshToken stored = refreshTokenService.validateByRawToken(dto.token());
 
-         refreshTokenService.verifyExpiration(refreshToken);
+        Account account = stored.getAccount();
 
-         Account account =  refreshToken.getAccount();
+        String newAccessToken = jwtTokenUtil.generateToken(account);
 
-         String accessToken = jwtTokenUtil.generateToken(account);
+        refreshTokenService.revoke(stored);
+        String newRawRefreshToken = refreshTokenService.generateRefreshToken(account);
 
-         refreshTokenService.deleteById(refreshToken.getId());
-         RefreshToken newRefreshToken = refreshTokenService.generateRefreshToken(account.getEmail());
-
-         return new RefreshTokenResponseDTO(accessToken, newRefreshToken.getToken());
+        return new RefreshTokenResponseDTO(newAccessToken, newRawRefreshToken);
     }
 
     @Transactional
     public void logout(Account account) {
-        refreshTokenService.deleteTokenByAccount(account);
+        refreshTokenService.revokeAllByAccount(account);
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null) return null;
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 
     private void validatePanelAccess(PanelType requestedPanel, AccountRole userRole) {
-        if (requestedPanel == PanelType.EMPLOYEE && userRole != AccountRole.EMPLOYEE) {
-            throw new NobileSolApiException("Acesso negado. Apenas funcionários podem aceder a este painel.", HttpStatus.FORBIDDEN);
-        }
-        if (requestedPanel == PanelType.INVESTOR && userRole != AccountRole.INVESTOR) {
-            throw new NobileSolApiException("Acesso negado. Apenas investidores podem aceder a este painel.", HttpStatus.FORBIDDEN);
+        if (requestedPanel == PanelType.EMPLOYEE) {
+            if (userRole != AccountRole.EMPLOYEE) {
+                throw new NobileSolApiException(
+                        "Acesso negado. Apenas investidores podem acessar este painel.",
+                        HttpStatus.FORBIDDEN
+                );
+            }
+        } else if (requestedPanel == PanelType.INVESTOR) {
+            if (userRole != AccountRole.INVESTOR) {
+                throw new NobileSolApiException(
+                        "Acesso negado. Apenas investidores podem acessar este painel.",
+                        HttpStatus.FORBIDDEN
+                );
+            }
         }
     }
 }

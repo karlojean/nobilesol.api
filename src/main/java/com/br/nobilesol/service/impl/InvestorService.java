@@ -12,26 +12,26 @@ import com.br.nobilesol.mapper.InvestorMapper;
 import com.br.nobilesol.repository.InvestorRepository;
 import com.br.nobilesol.utils.RandomPasswordGenerator;
 import com.br.nobilesol.validation.validators.InvestorValidator;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.UUID;
-
 
 @Service
 public class InvestorService {
+
     private final InvestorMapper investorMapper;
     private final InvestorRepository investorRepository;
     private final AccountService accountService;
     private final InvestorValidator investorValidator;
 
-    public InvestorService(InvestorMapper investorMapper, InvestorRepository investorRepository, AccountService accountService, InvestorValidator investorValidator) {
+    public InvestorService(InvestorMapper investorMapper,
+                           InvestorRepository investorRepository,
+                           AccountService accountService,
+                           InvestorValidator investorValidator) {
         this.investorMapper = investorMapper;
         this.investorRepository = investorRepository;
         this.accountService = accountService;
@@ -39,50 +39,51 @@ public class InvestorService {
     }
 
     @Transactional
-    public InvestorResponseDTO create(CreateInvestorRequestDTO createInvestorRequestDTO) {
-        investorValidator.validateForCreation(createInvestorRequestDTO);
+    public InvestorResponseDTO create(CreateInvestorRequestDTO req) {
+        investorValidator.validateForCreation(req);
 
-        Investor investor = investorMapper.toEntity(createInvestorRequestDTO);
+        Investor investor = investorMapper.toEntity(req);
 
-        String password = RandomPasswordGenerator.generatePassword(10);
+        String tempPassword = RandomPasswordGenerator.generatePassword(10);
         Account account = accountService.createAccount(
-                createInvestorRequestDTO.account(),
+                req.account(),         // email vem aqui
                 AccountRole.INVESTOR,
-                password
+                tempPassword
         );
+
         investor.setAccount(account);
         account.setInvestor(investor);
 
-        // Quando implementado, será enviado um email com a senha default
-        System.out.println("Senha do usuário" + password);
+        Investor saved = investorRepository.save(investor);
 
-        return investorMapper.toResponseDTO(investorRepository.save(investor));
+        // TODO: enviar e-mail com senha temporária quando implementar
+        // emailService.sendInvestorWelcome(account.getEmail(), investor.getDisplayName(), tempPassword);
+        System.out.println("Senha temporária do investidor: " + tempPassword);
+
+        return investorMapper.toResponseDTO(saved);
     }
 
     @Transactional
-    public InvestorResponseDTO updateInvestor(UUID id, UpdateInvestorRequestDTO updateDTO) {
-        Investor existingInvestor = getEntityById(id);
+    public InvestorResponseDTO updateInvestor(UUID id, UpdateInvestorRequestDTO dto) {
+        Investor existing = getEntityById(id);
+        investorValidator.validateForUpdate(existing, dto);
 
-        investorValidator.validateForUpdate(existingInvestor, updateDTO);
+        investorMapper.updateInvestorFromDTO(dto, existing);
+        Investor saved = investorRepository.save(existing);
 
-        investorMapper.updateInvestorFromDTO(updateDTO, existingInvestor);
-        Investor savedInvestor = investorRepository.save(existingInvestor);
-
-
-        return investorMapper.toResponseDTO(savedInvestor);
+        return investorMapper.toResponseDTO(saved);
     }
 
-
-    @Transactional()
+    @Transactional
     public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
-        Page<Investor> investors = investorRepository.search(filter, pageable);
-        Page<InvestorResponseDTO> dtoPage = investors.map(investorMapper::toResponseDTO);
-
+        Page<Investor> page = investorRepository.search(filter, pageable);
+        Page<InvestorResponseDTO> dtoPage = page.map(investorMapper::toResponseDTO);
         return PageResponseDTO.from(dtoPage);
     }
 
     public Investor getEntityById(UUID id) {
         return investorRepository.findById(id)
-                .orElseThrow(() -> new NobileSolApiException("Investidor não encontrado com ID: " + id, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NobileSolApiException(
+                        "Investidor não encontrado com ID: " + id, HttpStatus.NOT_FOUND));
     }
 }

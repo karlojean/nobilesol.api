@@ -10,8 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ResetPasswordTokenRepository extends JpaRepository<ResetPasswordToken, UUID> {
-    boolean existsByAccount(Account Account);
-    ResetPasswordToken getByAccount(Account Account);
-    Optional<ResetPasswordToken> getResetPasswordTokenByToken(String token);
-    List<ResetPasswordToken> findAllByExpiryDateBefore(Instant expiryDate);
+    Optional<ResetPasswordToken> findTopByAccountOrderByCreatedAtDesc(Account account);
+    Optional<ResetPasswordToken> findByTokenHash(String tokenHash);
+    List<ResetPasswordToken> findAllByExpiresAtBefore(Instant now);
 }

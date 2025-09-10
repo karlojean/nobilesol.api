@@ -21,3 +21,7 @@ server:
     include-message: always
   servlet:
     context-path: /api/v1
+
+jwt:
+  secret: "652ca2150061c0de8f8e1927b996fafd"
+  expiration: 86400000

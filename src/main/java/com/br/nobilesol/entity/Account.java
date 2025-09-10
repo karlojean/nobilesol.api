@@ -2,11 +2,8 @@ package com.br.nobilesol.entity;
 
 import com.br.nobilesol.entity.enums.AccountRole;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,42 +15,28 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity
-@Table(name = "account")
+@Table(name = "accounts",
+        uniqueConstraints = @UniqueConstraint(name = "uq_accounts_email", columnNames = "email"))
 public class Account implements UserDetails {
+
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false, length = 255)
     private String email;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "role", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 32)
     private AccountRole role;
 
-    @NotNull
-    @ColumnDefault("true")
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = false;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private boolean active = true;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Employee employee;
@@ -61,26 +44,22 @@ public class Account implements UserDetails {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Investor investor;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority("ROLE_" + this.getRole().name());
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-        if (this.getRole() == AccountRole.EMPLOYEE && this.getEmployee() != null) {
-            if (this.getEmployee().isAdmin()) {
-                return List.of(roleAuthority, new SimpleGrantedAuthority("PERMISSION_CREATE_EMPLOYEE"));
-            }
-        }
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
-        return List.of(roleAuthority);
+    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    @Override
-    public String getPassword() {
-        return this.passwordHash;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
+    @Override public String getPassword() { return passwordHash; }
+    @Override public String getUsername() { return email; }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return active; }
 }

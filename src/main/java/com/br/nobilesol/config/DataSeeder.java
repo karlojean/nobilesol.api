@@ -42,13 +42,12 @@ public class DataSeeder implements CommandLineRunner {
             newAccount.setEmail("default@employee.com");
             newAccount.setPasswordHash(passwordEncoder.encode("secret"));
             newAccount.setRole(AccountRole.EMPLOYEE);
-            newAccount.setIsActive(true);
+            newAccount.setActive(true);
 
             Employee employeeProfile = new Employee();
 
             employeeProfile.setAccount(newAccount);
-            employeeProfile.setFirstName("Jean");
-            employeeProfile.setLastName("Karlo Firmino Coelho");
+            employeeProfile.setName("Jean Karlo Firmino Coelho");
 
             newAccount.setEmployee(employeeProfile);
             employeeProfile.setAdmin(true);
@@ -58,4 +57,6 @@ public class DataSeeder implements CommandLineRunner {
             logger.info("Já existem funcionários no banco de dados. Nenhum usuário padrão foi criado.");
         }
     }
+
+
 }
