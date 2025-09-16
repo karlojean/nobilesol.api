@@ -9,7 +9,7 @@ public record AccountResponseDTO(
         UUID id,
         String email,
         AccountRole role,
-        Boolean isActive,
+        Boolean active,
         Instant createdAt
 ) {
 }
