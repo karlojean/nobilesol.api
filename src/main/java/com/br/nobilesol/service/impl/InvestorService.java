@@ -74,6 +74,7 @@ public class InvestorService {
         return investorMapper.toResponseDTO(saved);
     }
 
+
     @Transactional
     public PageResponseDTO<InvestorResponseDTO> getAll(String filter, Pageable pageable) {
         Page<Investor> page = investorRepository.search(filter, pageable);

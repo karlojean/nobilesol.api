@@ -4,8 +4,6 @@ import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.dto.investor.UpdateInvestorRequestDTO;
 import com.br.nobilesol.entity.Investor;
-import com.br.nobilesol.entity.enums.InvestorType;
-import jakarta.validation.ValidationException;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -13,8 +11,7 @@ import java.util.List;
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.WARN,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+
         uses = {AccountMapper.class}
 )
 public interface InvestorMapper {
@@ -33,7 +30,6 @@ public interface InvestorMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "account", ignore = true)
-    void updateInvestorFromDTO(UpdateInvestorRequestDTO updateDTO, @MappingTarget Investor investor);
-
+    void updateInvestorFromDTO(UpdateInvestorRequestDTO updateDto, @MappingTarget Investor investor);
 }
 

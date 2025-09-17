@@ -19,6 +19,6 @@ public record CreateInvestorRequestDTO(
         String phoneNumber,
 
         @NotNull @Valid
-        AccountRequestDTO account
+        AccountRequestDTO accountN
 ) {
 }

@@ -31,7 +31,7 @@ public class InvestorController {
         return new ResponseEntity<>(investorService.create(createInvestorRequestDTO), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> updateInvestor(
             @PathVariable UUID id,
