@@ -51,4 +51,10 @@ public class InvestorController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(investorService.getAll(filter, pageable));
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<InvestorResponseDTO> getInvestorById(@PathVariable UUID id) {
+        return ResponseEntity.ok(investorService.getById(id));
+    }
 }

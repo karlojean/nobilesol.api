@@ -81,6 +81,13 @@ public class InvestorService {
         return PageResponseDTO.from(dtoPage);
     }
 
+    @Transactional
+    public InvestorResponseDTO getById(UUID id) {
+        Investor investor = getEntityById(id);
+
+        return investorMapper.toResponseDTO(investor);
+    }
+
     public Investor getEntityById(UUID id) {
         return investorRepository.findById(id)
                 .orElseThrow(() -> new NobileSolApiException(
