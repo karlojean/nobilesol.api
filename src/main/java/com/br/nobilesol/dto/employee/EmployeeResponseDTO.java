@@ -6,8 +6,7 @@ import java.util.UUID;
 
 public record EmployeeResponseDTO (
         UUID id,
-        String firstName,
-        String lastName,
+        String name,
         String department,
         AccountResponseDTO account
 ) {

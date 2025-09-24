@@ -53,7 +53,15 @@ public class Account implements UserDetails {
     private Instant updatedAt;
 
     @Override public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        List<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>();
+        
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        
+        if (role == AccountRole.EMPLOYEE && employee != null && employee.isAdmin()) {
+                authorities.add(new SimpleGrantedAuthority("PERMISSION_EMPLOYEE_MANAGEMENT"));
+        }
+        
+        return authorities;
     }
 
     @Override public String getPassword() { return passwordHash; }

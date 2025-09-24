@@ -4,6 +4,7 @@ import com.br.nobilesol.exception.NobileSolApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -51,6 +52,17 @@ public class RestExceptionController {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDeniedException(AccessDeniedException e) {
+        var pb = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+
+        pb.setTitle("Acesso Negado");
+        pb.setDetail("Você não tem permissão para acessar este recurso.");
+        pb.setProperty("timestamp", Instant.now());
+
+        return pb;
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(AuthorizationDeniedException e) {
         var pb = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
 
         pb.setTitle("Acesso Negado");

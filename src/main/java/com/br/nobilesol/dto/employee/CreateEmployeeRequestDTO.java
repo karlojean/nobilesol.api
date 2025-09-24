@@ -7,21 +7,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateEmployeeRequestDTO(
-        @NotNull
-        @Valid
-        AccountRequestDTO account,
-
-        @NotEmpty
-        @Size(min = 1, max = 50)
-        String firstName,
-
         @NotEmpty
         @Size(min = 1, max = 255)
-        String lastName,
+        String name,
 
         @NotEmpty
         String department,
 
-        boolean isAdmin
+        boolean isAdmin,
+
+        @NotNull
+        @Valid
+        AccountRequestDTO account
 ) {
 }
