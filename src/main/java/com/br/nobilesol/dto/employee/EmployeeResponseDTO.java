@@ -8,6 +8,7 @@ public record EmployeeResponseDTO (
         UUID id,
         String name,
         String department,
+        Boolean admin,
         AccountResponseDTO account
 ) {
 }
