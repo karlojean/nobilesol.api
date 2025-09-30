@@ -7,6 +7,8 @@ import com.br.nobilesol.entity.Employee;
 import com.br.nobilesol.entity.Investor;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
+import com.br.nobilesol.mapper.EmployeeMapper;
+import com.br.nobilesol.mapper.InvestorMapper;
 import com.br.nobilesol.repository.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,10 +24,14 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final InvestorMapper investorMapper;
+    private final EmployeeMapper employeeMapper;
 
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, InvestorMapper investorMapper, EmployeeMapper employeeMapper) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
+        this.investorMapper = investorMapper;
+        this.employeeMapper = employeeMapper;
     }
 
     @Transactional
@@ -47,11 +53,14 @@ public class AccountService {
 
     public CurrentAccountResponseDTO getCurrentAccount(Account account) {
         String displayName = resolveDisplayName(account);
+
         return new CurrentAccountResponseDTO(
                 account.getId(),
                 displayName,
                 account.getEmail(),
-                account.getRole()
+                account.getRole(),
+                account.getInvestor() != null ? investorMapper.toResponseDTO(account.getInvestor()) : null,
+                account.getEmployee() != null ? employeeMapper.toResponseDTO(account.getEmployee()) : null
         );
     }
 

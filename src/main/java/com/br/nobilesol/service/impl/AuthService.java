@@ -13,6 +13,8 @@ import com.br.nobilesol.entity.RefreshToken;
 import com.br.nobilesol.entity.ResetPasswordToken;
 import com.br.nobilesol.entity.enums.AccountRole;
 import com.br.nobilesol.exception.NobileSolApiException;
+import com.br.nobilesol.mapper.EmployeeMapper;
+import com.br.nobilesol.mapper.InvestorMapper;
 import com.br.nobilesol.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -31,19 +33,23 @@ public class AuthService {
     private final AccountService accountService;
     private final ResetPasswordService resetPasswordService;
     private final RefreshTokenService refreshTokenService;
+    private final InvestorMapper investorMapper;
+    private final EmployeeMapper employeeMapper;
 
     public AuthService(
             AuthenticationManager authenticationManager,
             JwtTokenUtil jwtTokenUtil,
             AccountService accountService,
             ResetPasswordService resetPasswordService,
-            RefreshTokenService refreshTokenService
-    ) {
+            RefreshTokenService refreshTokenService,
+            InvestorMapper investorMapper, EmployeeMapper employeeMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.accountService = accountService;
         this.resetPasswordService = resetPasswordService;
         this.refreshTokenService = refreshTokenService;
+        this.investorMapper = investorMapper;
+        this.employeeMapper = employeeMapper;
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
@@ -67,7 +73,9 @@ public class AuthService {
                 accountPrincipal.getId(),
                 displayName,
                 accountPrincipal.getEmail(),
-                accountPrincipal.getRole()
+                accountPrincipal.getRole(),
+                accountPrincipal.getInvestor() != null ? investorMapper.toResponseDTO(accountPrincipal.getInvestor()) : null,
+                accountPrincipal.getEmployee() != null ? employeeMapper.toResponseDTO(accountPrincipal.getEmployee()) : null
         );
 
         return new LoginResponseDTO(jwt, rawRefreshToken, currentAccount);
