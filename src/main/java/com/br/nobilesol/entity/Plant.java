@@ -1,15 +1,15 @@
 package com.br.nobilesol.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,13 +22,14 @@ import java.util.UUID;
 public class Plant {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_project", nullable = false)
-    private Project idProject;
+    private Project project;
 
     @Size(max = 255)
     @NotNull
@@ -54,16 +55,15 @@ public class Plant {
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 
-    @NotNull
-    @ColumnDefault("now()")
-    @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @NotNull
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 
-    @OneToMany(mappedBy = "idPlant")
-    private Set<PlantInvestor> plantInvestors = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "plant")
+    private Set<PlantInvestor> investors = new LinkedHashSet<>();
 
 }
