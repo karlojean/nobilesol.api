@@ -24,9 +24,6 @@ public record UpdateProjectRequestDTO(
     @Size(max = 20, message = "Modelo de negócio não pode exceder 20 caracteres")
     String businessModel,
 
-    @Size(max = 20, message = "Regra de distribuição de energia não pode exceder 20 caracteres")
-    String energyDistributionRule,
-
     @Size(max = 255, message = "Concessionária não pode exceder 255 caracteres")
     String utilityCompany,
 

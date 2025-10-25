@@ -54,10 +54,6 @@ public class Project extends Auditable {
     @Column(name = "business_model", nullable = false, length = 20)
     private String businessModel;
 
-    @Size(max = 20)
-    @Column(name = "energy_distribution_rule", length = 20)
-    private String energyDistributionRule;
-
     @Size(max = 255)
     @Column(name = "utility_company")
     private String utilityCompany;

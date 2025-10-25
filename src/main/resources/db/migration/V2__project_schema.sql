@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS projects (
     rated_power_w BIGINT NOT NULL,
     peak_power_wp BIGINT NOT NULL,
     business_model VARCHAR(20) NOT NULL CHECK (business_model IN ('traditional', 'fractional')),
-    energy_distribution_rule VARCHAR(20) CHECK (energy_distribution_rule IN ('mutualist', 'individual')),
     utility_company VARCHAR(255),
     project_status VARCHAR(20) NOT NULL DEFAULT 'planning' CHECK (project_status IN ('planning', 'under_construction', 'operational', 'suspended', 'decommissioned')),
     construction_start_date DATE,

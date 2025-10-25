@@ -15,7 +15,6 @@ public record ProjectResponseDTO(
     Long ratedPowerW,
     Long peakPowerWp,
     String businessModel,
-    String energyDistributionRule,
     String utilityCompany,
     String projectStatus,
     LocalDate constructionStartDate,
