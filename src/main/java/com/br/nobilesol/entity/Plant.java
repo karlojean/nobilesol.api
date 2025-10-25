@@ -42,12 +42,12 @@ public class Plant extends Auditable {
     private String type;
 
     @NotNull
-    @Column(name = "rated_power_kw", nullable = false, precision = 10, scale = 2)
-    private BigDecimal ratedPowerKw;
+    @Column(name = "rated_power_w", nullable = false)
+    private Long ratedPowerW;
 
     @NotNull
-    @Column(name = "peak_power_kwp", nullable = false, precision = 10, scale = 2)
-    private BigDecimal peakPowerKwp;
+    @Column(name = "peak_power_wp", nullable = false)
+    private Long peakPowerWp;
 
     @Size(max = 20)
     @NotNull

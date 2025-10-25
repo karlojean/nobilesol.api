@@ -42,12 +42,12 @@ public class Project extends Auditable {
     private BigDecimal longitude;
 
     @NotNull
-    @Column(name = "rated_power_kw", nullable = false, precision = 10, scale = 2)
-    private BigDecimal ratedPowerKw;
+    @Column(name = "rated_power_w", nullable = false)
+    private Long ratedPowerW;
 
     @NotNull
-    @Column(name = "peak_power_kwp", nullable = false, precision = 10, scale = 2)
-    private BigDecimal peakPowerKwp;
+    @Column(name = "peak_power_wp", nullable = false)
+    private Long peakPowerWp;
 
     @Size(max = 20)
     @NotNull
@@ -74,8 +74,8 @@ public class Project extends Auditable {
     @Column(name = "commercial_operation_date")
     private LocalDate commercialOperationDate;
 
-    @Column(name = "expected_annual_generation_mwh", precision = 10, scale = 2)
-    private BigDecimal expectedAnnualGenerationMwh;
+    @Column(name = "expected_annual_generation_wh")
+    private Long expectedAnnualGenerationWh;
 
     @OneToMany(mappedBy = "project")
     private Set<Plant> plants = new LinkedHashSet<>();

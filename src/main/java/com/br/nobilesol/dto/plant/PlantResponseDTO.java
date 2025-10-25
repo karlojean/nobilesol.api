@@ -10,8 +10,8 @@ public record PlantResponseDTO(
     UUID id,
     String name,
     String type,
-    BigDecimal ratedPowerKw,
-    BigDecimal peakPowerKwp,
+    Long ratedPowerW,
+    Long peakPowerWp,
     String status,
     Instant createdAt,
     Instant updatedAt) {

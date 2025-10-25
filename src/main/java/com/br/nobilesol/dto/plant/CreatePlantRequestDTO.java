@@ -15,9 +15,9 @@ public record CreatePlantRequestDTO(
 
     @NotEmpty @Size(max = 20) String type,
 
-    @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal ratedPowerKw,
+    @NotNull Long ratedPowerW,
 
-    @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal peakPowerKwp,
+    @NotNull Long peakPowerWp,
 
     @NotEmpty @Size(max = 20) String status) {
 }

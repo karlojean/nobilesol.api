@@ -12,15 +12,15 @@ public record ProjectResponseDTO(
     String description,
     BigDecimal latitude,
     BigDecimal longitude,
-    BigDecimal ratedPowerKw,
-    BigDecimal peakPowerKwp,
+    Long ratedPowerW,
+    Long peakPowerWp,
     String businessModel,
     String energyDistributionRule,
     String utilityCompany,
     String projectStatus,
     LocalDate constructionStartDate,
     LocalDate commercialOperationDate,
-    BigDecimal expectedAnnualGenerationMwh,
+    Long expectedAnnualGenerationWh,
     Instant createdAt,
     Instant updatedAt) {
 }

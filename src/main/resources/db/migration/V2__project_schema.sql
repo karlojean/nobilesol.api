@@ -4,17 +4,20 @@ CREATE TABLE IF NOT EXISTS projects (
     description TEXT,
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
-    rated_power_kw DECIMAL(10, 2) NOT NULL,
-    peak_power_kwp DECIMAL(10, 2) NOT NULL,
+    rated_power_w BIGINT NOT NULL,
+    peak_power_wp BIGINT NOT NULL,
     business_model VARCHAR(20) NOT NULL CHECK (business_model IN ('traditional', 'fractional')),
     energy_distribution_rule VARCHAR(20) CHECK (energy_distribution_rule IN ('mutualist', 'individual')),
     utility_company VARCHAR(255),
     project_status VARCHAR(20) NOT NULL DEFAULT 'planning' CHECK (project_status IN ('planning', 'under_construction', 'operational', 'suspended', 'decommissioned')),
     construction_start_date DATE,
     commercial_operation_date DATE,
-    expected_annual_generation_mwh DECIMAL(10, 2),
+    expected_annual_generation_wh BIGINT,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+
+    CONSTRAINT ck_lat_range CHECK (latitude BETWEEN -90  AND 90),
+    CONSTRAINT ck_lon_range CHECK (longitude BETWEEN -180 AND 180)
 );
 
 CREATE TABLE IF NOT EXISTS plants (
@@ -22,8 +25,8 @@ CREATE TABLE IF NOT EXISTS plants (
     id_project UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('unitary', 'solar_box')),
-    rated_power_kw DECIMAL(10, 2) NOT NULL,
-    peak_power_kwp DECIMAL(10, 2) NOT NULL,
+    rated_power_w BIGINT NOT NULL,
+    peak_power_wp BIGINT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'reserved', 'sold', 'operational')),
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,

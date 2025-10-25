@@ -1,9 +1,6 @@
 package com.br.nobilesol.dto.project;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,12 +17,12 @@ public record CreateProjectRequestDTO(
     BigDecimal longitude,
 
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    BigDecimal ratedPowerKw,
+    @Positive(message = "A potência nominal deve ser um valor positivo")
+    Long ratedPowerW,
 
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    BigDecimal peakPowerKwp,
+    @Positive(message = "A potência de pico deve ser um valor positivo")
+    Long peakPowerWp,
 
     @NotEmpty @Size(max = 20)
     String businessModel,
@@ -43,6 +40,6 @@ public record CreateProjectRequestDTO(
 
     LocalDate commercialOperationDate,
 
-    @DecimalMin(value = "0.0")
-    BigDecimal expectedAnnualGenerationMwh) {
+    @Positive(message = "A geração anual esperada deve ser um valor positivo")
+    Long expectedAnnualGenerationWh) {
 }
