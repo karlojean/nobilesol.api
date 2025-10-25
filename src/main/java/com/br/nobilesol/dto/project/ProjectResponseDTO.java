@@ -1,5 +1,7 @@
 package com.br.nobilesol.dto.project;
 
+import com.br.nobilesol.entity.enums.ProjectStatus;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,7 +18,7 @@ public record ProjectResponseDTO(
     Long peakPowerWp,
     String businessModel,
     String utilityCompany,
-    String projectStatus,
+    ProjectStatus status,
     LocalDate constructionStartDate,
     LocalDate commercialOperationDate,
     Long expectedAnnualGenerationWh,

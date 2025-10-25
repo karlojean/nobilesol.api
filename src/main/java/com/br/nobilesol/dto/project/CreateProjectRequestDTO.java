@@ -1,5 +1,6 @@
 package com.br.nobilesol.dto.project;
 
+import com.br.nobilesol.entity.enums.ProjectStatus;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -37,8 +38,8 @@ public record CreateProjectRequestDTO(
     @Size(max = 255)
     String utilityCompany,
 
-    @NotEmpty @Size(max = 20)
-    String projectStatus,
+    @NotEmpty
+    ProjectStatus status,
 
     LocalDate constructionStartDate,
 

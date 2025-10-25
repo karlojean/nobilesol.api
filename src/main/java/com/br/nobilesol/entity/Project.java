@@ -1,5 +1,6 @@
 package com.br.nobilesol.entity;
 
+import com.br.nobilesol.entity.enums.ProjectStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -62,7 +63,8 @@ public class Project extends Auditable {
     @NotNull
     @ColumnDefault("'planning'")
     @Column(name = "project_status", nullable = false, length = 20)
-    private String projectStatus;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus status;
 
     @Column(name = "construction_start_date")
     private LocalDate constructionStartDate;

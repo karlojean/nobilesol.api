@@ -5,6 +5,8 @@ import com.br.nobilesol.dto.project.CreateProjectRequestDTO;
 import com.br.nobilesol.dto.project.ProjectResponseDTO;
 import com.br.nobilesol.dto.project.UpdateProjectRequestDTO;
 import com.br.nobilesol.service.impl.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/projects")
+@Tag(name = "Project", description = "Endpoints for managing projects")
 public class ProjectController {
 
   private final ProjectService projectService;
@@ -51,6 +54,7 @@ public class ProjectController {
 
   @GetMapping
   @PreAuthorize("hasRole('EMPLOYEE')")
+  @Operation(operationId = "Get all projects")
   public ResponseEntity<PageResponseDTO<ProjectResponseDTO>> getAll(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,

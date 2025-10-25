@@ -1,6 +1,6 @@
 package com.br.nobilesol.dto.project;
 
-import jakarta.validation.constraints.DecimalMin;
+import com.br.nobilesol.entity.enums.ProjectStatus;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -27,8 +27,7 @@ public record UpdateProjectRequestDTO(
     @Size(max = 255, message = "Concessionária não pode exceder 255 caracteres")
     String utilityCompany,
 
-    @Size(max = 20, message = "Status do projeto não pode exceder 20 caracteres")
-    String projectStatus,
+    ProjectStatus status,
 
     LocalDate constructionStartDate,
 
