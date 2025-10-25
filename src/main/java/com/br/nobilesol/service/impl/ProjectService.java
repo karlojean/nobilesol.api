@@ -8,6 +8,7 @@ import com.br.nobilesol.entity.Project;
 import com.br.nobilesol.exception.NobileSolApiException;
 import com.br.nobilesol.mapper.ProjectMapper;
 import com.br.nobilesol.repository.ProjectRepository;
+import com.br.nobilesol.validation.validators.ProjectValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,61 +22,65 @@ import java.util.UUID;
 @Service
 public class ProjectService {
 
-  private final ProjectMapper projectMapper;
-  private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
+    private final ProjectRepository projectRepository;
+    private final ProjectValidator projectValidator;
 
-  public ProjectService(ProjectMapper projectMapper, ProjectRepository projectRepository) {
-    this.projectMapper = projectMapper;
-    this.projectRepository = projectRepository;
-  }
+    public ProjectService(ProjectMapper projectMapper, ProjectRepository projectRepository, ProjectValidator projectValidator) {
+        this.projectMapper = projectMapper;
+        this.projectRepository = projectRepository;
+        this.projectValidator = projectValidator;
+    }
 
-  @Transactional
-  public ProjectResponseDTO create(CreateProjectRequestDTO createProjectRequestDTO) {
-    Project project = projectMapper.toEntity(createProjectRequestDTO);
+    @Transactional
+    public ProjectResponseDTO create(CreateProjectRequestDTO createProjectRequestDTO) {
+        projectValidator.validateForCreation(createProjectRequestDTO);
 
-    Project savedProject = projectRepository.save(project);
-    return projectMapper.toResponseDTO(savedProject);
-  }
+        Project project = projectMapper.toEntity(createProjectRequestDTO);
 
-  @Transactional
-  public ProjectResponseDTO update(UUID id, UpdateProjectRequestDTO updateProjectRequestDTO) {
-    Project project = findProjectById(id);
+        Project savedProject = projectRepository.save(project);
+        return projectMapper.toResponseDTO(savedProject);
+    }
 
-    projectMapper.updateProjectFromDTO(updateProjectRequestDTO, project);
-    project.setUpdatedAt(Instant.now());
+    @Transactional
+    public ProjectResponseDTO update(UUID id, UpdateProjectRequestDTO updateProjectRequestDTO) {
+        Project project = findProjectById(id);
 
-    Project updatedProject = projectRepository.save(project);
-    return projectMapper.toResponseDTO(updatedProject);
-  }
+        projectMapper.updateProjectFromDTO(updateProjectRequestDTO, project);
+        project.setUpdatedAt(Instant.now());
 
-  public ProjectResponseDTO getById(UUID id) {
-    Project project = findProjectById(id);
-    return projectMapper.toResponseDTO(project);
-  }
+        Project updatedProject = projectRepository.save(project);
+        return projectMapper.toResponseDTO(updatedProject);
+    }
 
-  public PageResponseDTO<ProjectResponseDTO> getAll(String filter, Pageable pageable) {
-    Page<Project> projectPage = projectRepository.search(filter.trim(), pageable);
+    public ProjectResponseDTO getById(UUID id) {
+        Project project = findProjectById(id);
+        return projectMapper.toResponseDTO(project);
+    }
 
-    Page<ProjectResponseDTO> responseDTOPage = projectPage.map(projectMapper::toResponseDTO);
+    public PageResponseDTO<ProjectResponseDTO> getAll(String filter, Pageable pageable) {
+        Page<Project> projectPage = projectRepository.search(filter.trim(), pageable);
 
-    return PageResponseDTO.from(responseDTOPage);
-  }
+        Page<ProjectResponseDTO> responseDTOPage = projectPage.map(projectMapper::toResponseDTO);
 
-  @Transactional
-  public void delete(UUID id) {
-    Project project = findProjectById(id);
-    projectRepository.delete(project);
-  }
+        return PageResponseDTO.from(responseDTOPage);
+    }
 
-  private Project findProjectById(UUID id) {
-    return projectRepository.findById(id)
-        .orElseThrow(() -> new NobileSolApiException(
-            "Projeto não encontrado com ID: " + id,
-            HttpStatus.NOT_FOUND));
-  }
+    @Transactional
+    public void delete(UUID id) {
+        Project project = findProjectById(id);
+        projectRepository.delete(project);
+    }
 
-  // Método auxiliar para outros serviços
-  public Project getProjectEntity(UUID id) {
-    return findProjectById(id);
-  }
+    private Project findProjectById(UUID id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new NobileSolApiException(
+                        "Projeto não encontrado com ID: " + id,
+                        HttpStatus.NOT_FOUND));
+    }
+
+
+    public Project getProjectEntity(UUID id) {
+        return findProjectById(id);
+    }
 }

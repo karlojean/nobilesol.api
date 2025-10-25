@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "investors",
         uniqueConstraints = @UniqueConstraint(name="uq_investors_document", columnNames = "document_number"),
         indexes = @Index(name="idx_investors_account_id", columnList = "account_id"))
-public class Investor {
+public class Investor extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,14 +50,6 @@ public class Investor {
 
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     public String getDisplayName() {
         return (type == InvestorType.INDIVIDUAL)

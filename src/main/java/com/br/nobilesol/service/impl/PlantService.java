@@ -57,11 +57,11 @@ public class PlantService {
 
   public PlantResponseDTO getById(UUID projectId, UUID plantId) {
     Plant plant = findPlantByIdAndProject(plantId, projectId);
-    return plantMapper.toResponseDTO(plant);
+    return plantMapper.toResponseDTO(plant);// // TODO Validar se o projeto existe Validar se o projeto existe
   }
 
   public List<PlantResponseDTO> getAllByProject(UUID projectId) {
-    // Validar se o projeto existe
+    // TODO Validar se o projeto existe
     projectService.getProjectEntity(projectId);
 
     List<Plant> plants = plantRepository.findByProjectId(projectId);

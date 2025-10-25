@@ -16,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "employees",
         indexes = @Index(name = "idx_employees_account_id", columnList = "account_id"))
-public class Employee {
+public class Employee extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,12 +36,4 @@ public class Employee {
 
     @Column(name = "is_admin", nullable = false)
     private boolean admin = false;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 }

@@ -21,7 +21,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "projects")
-public class Project {
+public class Project extends Auditable {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -76,14 +76,6 @@ public class Project {
 
     @Column(name = "expected_annual_generation_mwh", precision = 10, scale = 2)
     private BigDecimal expectedAnnualGenerationMwh;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @OneToMany(mappedBy = "project")
     private Set<Plant> plants = new LinkedHashSet<>();

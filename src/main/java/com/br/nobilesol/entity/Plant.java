@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "plants")
-public class Plant {
+public class Plant extends Auditable {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -54,14 +54,6 @@ public class Plant {
     @ColumnDefault("'available'")
     @Column(name = "status", nullable = false, length = 20)
     private String status;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @OneToMany(mappedBy = "plant")
     private Set<PlantInvestor> investors = new LinkedHashSet<>();

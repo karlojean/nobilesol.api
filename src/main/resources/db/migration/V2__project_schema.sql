@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS projects (
-                                        id UUID PRIMARY KEY,
-                                        name VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
@@ -13,34 +13,34 @@ CREATE TABLE IF NOT EXISTS projects (
     construction_start_date DATE,
     commercial_operation_date DATE,
     expected_annual_generation_mwh DECIMAL(10, 2),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL
-    );
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS plants (
-                                      id UUID PRIMARY KEY,
-                                      id_project UUID NOT NULL,
-                                      name VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY,
+    id_project UUID NOT NULL,
+    name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('unitary', 'solar_box')),
     rated_power_kw DECIMAL(10, 2) NOT NULL,
     peak_power_kwp DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'reserved', 'sold', 'operational')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     FOREIGN KEY (id_project) REFERENCES projects(id) ON DELETE CASCADE
-    );
+);
 
 CREATE TABLE IF NOT EXISTS plant_investor (
-                                              id UUID PRIMARY KEY,
-                                              id_plant UUID NOT NULL,
-                                              id_investor UUID NOT NULL,
-                                              linked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL,
+    id UUID PRIMARY KEY,
+    id_plant UUID NOT NULL,
+    id_investor UUID NOT NULL,
+    linked_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     FOREIGN KEY (id_plant) REFERENCES plants(id) ON DELETE CASCADE,
     FOREIGN KEY (id_investor) REFERENCES investors(id) ON DELETE CASCADE,
     UNIQUE (id_plant, id_investor)
-    );
+);
 
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(project_status);
 CREATE INDEX IF NOT EXISTS idx_projects_business_model ON projects(business_model);

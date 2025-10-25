@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "refresh_tokens",
         indexes = @Index(name="idx_refresh_tokens_account", columnList="account_id"))
-public class RefreshToken {
+public class RefreshToken extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,8 +37,4 @@ public class RefreshToken {
 
     @Column(name = "ip_address")
     private String ipAddress;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
 }

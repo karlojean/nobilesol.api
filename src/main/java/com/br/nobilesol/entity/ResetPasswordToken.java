@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "reset_password_tokens",
         indexes = @Index(name="idx_reset_password_tokens_account", columnList="account_id"))
-public class ResetPasswordToken {
+public class ResetPasswordToken extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,10 +28,6 @@ public class ResetPasswordToken {
 
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
 
     @Column(name = "used_at")
     private Instant usedAt;

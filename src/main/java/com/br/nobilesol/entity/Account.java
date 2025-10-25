@@ -19,7 +19,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "accounts",
         uniqueConstraints = @UniqueConstraint(name = "uq_accounts_email", columnNames = "email"))
-public class Account implements UserDetails {
+public class Account extends Auditable implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,14 +43,6 @@ public class Account implements UserDetails {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Investor investor;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Override public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>();
