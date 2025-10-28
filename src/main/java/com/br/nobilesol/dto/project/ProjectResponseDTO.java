@@ -1,13 +1,14 @@
 package com.br.nobilesol.dto.project;
 
 import com.br.nobilesol.entity.enums.ProjectStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Schema(name = "ProjectResponse", description = "DTO for project response")
 public record ProjectResponseDTO(
     UUID id,
     String name,

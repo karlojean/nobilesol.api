@@ -1,10 +1,8 @@
 package com.br.nobilesol.dto.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-
+@Schema(name = "RefreshTokenResponse", description = "DTO for refresh token response")
 public record RefreshTokenResponseDTO(
         String accessToken,
         String refreshToken

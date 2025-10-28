@@ -1,10 +1,11 @@
 package com.br.nobilesol.dto.plant;
 
-import jakarta.validation.constraints.DecimalMin;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
+@Schema(name = "UpdatePlantRequest", description = "DTO for updating an existing plant")
 public record UpdatePlantRequestDTO(
     @Size(min = 1, max = 255, message = "Nome deve ter entre 1 e 255 caracteres")
     String name,

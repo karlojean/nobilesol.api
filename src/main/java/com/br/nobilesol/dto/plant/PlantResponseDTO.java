@@ -1,11 +1,12 @@
 package com.br.nobilesol.dto.plant;
 
 
-import java.math.BigDecimal;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Schema(name = "PlantResponse", description = "DTO for plant response")
 public record PlantResponseDTO(
     UUID id,
     String name,

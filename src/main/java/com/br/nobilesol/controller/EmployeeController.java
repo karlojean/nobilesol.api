@@ -5,6 +5,8 @@ import com.br.nobilesol.dto.employee.CreateEmployeeRequestDTO;
 import com.br.nobilesol.dto.employee.EmployeeResponseDTO;
 import com.br.nobilesol.dto.employee.UpdateEmployeeRequestDTO;
 import com.br.nobilesol.service.impl.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Tag(name = "Employee", description = "Endpoints for managing employees")
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -25,6 +28,7 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @Operation(operationId = "Create a new employee")
     @PostMapping()
     @PreAuthorize("hasAuthority('PERMISSION_EMPLOYEE_MANAGEMENT')")
     public ResponseEntity<EmployeeResponseDTO> create(
@@ -32,6 +36,7 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.create(createEmployeeRequestDTO), HttpStatus.CREATED);
     }
 
+    @Operation(operationId = "Update an existing employee")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('PERMISSION_EMPLOYEE_MANAGEMENT')")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
@@ -42,6 +47,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(operationId = "Get all employees")
     @GetMapping
     @PreAuthorize("hasAuthority('PERMISSION_EMPLOYEE_MANAGEMENT')")
     public ResponseEntity<PageResponseDTO<EmployeeResponseDTO>> getAll(
@@ -52,6 +58,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAll(filter, pageable));
     }
 
+    @Operation(operationId = "Get employee by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('PERMISSION_EMPLOYEE_MANAGEMENT')")
     public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable UUID id) {

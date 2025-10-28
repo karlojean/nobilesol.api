@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Tag(name = "Project", description = "Endpoints for managing projects")
 @RestController
 @RequestMapping("/projects")
-@Tag(name = "Project", description = "Endpoints for managing projects")
 public class ProjectController {
 
   private final ProjectService projectService;
@@ -28,6 +28,7 @@ public class ProjectController {
     this.projectService = projectService;
   }
 
+  @Operation(operationId = "Create a new project")
   @PostMapping
   @PreAuthorize("hasRole('EMPLOYEE')")
   public ResponseEntity<ProjectResponseDTO> create(
@@ -36,6 +37,7 @@ public class ProjectController {
     return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
 
+  @Operation(operationId = "Update an existing project")
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('EMPLOYEE')")
   public ResponseEntity<ProjectResponseDTO> update(
@@ -45,6 +47,7 @@ public class ProjectController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(operationId = "Get project by ID")
   @GetMapping("/{id}")
   @PreAuthorize("hasRole('EMPLOYEE')")
   public ResponseEntity<ProjectResponseDTO> getById(@PathVariable UUID id) {
@@ -52,9 +55,9 @@ public class ProjectController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(operationId = "Get all projects")
   @GetMapping
   @PreAuthorize("hasRole('EMPLOYEE')")
-  @Operation(operationId = "Get all projects")
   public ResponseEntity<PageResponseDTO<ProjectResponseDTO>> getAll(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -64,6 +67,7 @@ public class ProjectController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(operationId = "Delete a project by ID")
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('EMPLOYEE')")
   public ResponseEntity<Void> delete(@PathVariable UUID id) {

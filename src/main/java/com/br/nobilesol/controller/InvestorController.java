@@ -5,6 +5,8 @@ import com.br.nobilesol.dto.investor.CreateInvestorRequestDTO;
 import com.br.nobilesol.dto.investor.InvestorResponseDTO;
 import com.br.nobilesol.dto.investor.UpdateInvestorRequestDTO;
 import com.br.nobilesol.service.impl.InvestorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Tag(name = "Investor", description = "Endpoints for managing investors")
 @RestController
 @RequestMapping("/investor")
 public class InvestorController {
@@ -25,12 +28,14 @@ public class InvestorController {
         this.investorService = investorService;
     }
 
+    @Operation(operationId = "Create a new investor")
     @PostMapping()
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> create(@RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO) {
         return new ResponseEntity<>(investorService.create(createInvestorRequestDTO), HttpStatus.CREATED);
     }
 
+    @Operation(operationId = "Update an existing investor")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> updateInvestor(
@@ -41,6 +46,7 @@ public class InvestorController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(operationId = "Get all investors")
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<PageResponseDTO<InvestorResponseDTO>> getAll(
@@ -52,6 +58,7 @@ public class InvestorController {
         return ResponseEntity.ok(investorService.getAll(filter, pageable));
     }
 
+    @Operation(operationId = "Get investor by ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<InvestorResponseDTO> getInvestorById(@PathVariable UUID id) {

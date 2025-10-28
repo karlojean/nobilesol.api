@@ -1,11 +1,13 @@
 package com.br.nobilesol.dto.project;
 
 import com.br.nobilesol.entity.enums.ProjectStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Schema(name = "CreateProjectRequest", description = "DTO for creating a new project")
 public record CreateProjectRequestDTO(
     @NotEmpty
     @Size(min = 1, max = 255)

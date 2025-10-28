@@ -1,8 +1,10 @@
 package com.br.nobilesol.dto.investor;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@Schema(name = "UpdateInvestorRequest", description = "DTO for updating an existing investor")
 public record UpdateInvestorRequestDTO(
 
         @Size(max = 255, message =  "Nome não pode exceder 255 caracteres")
