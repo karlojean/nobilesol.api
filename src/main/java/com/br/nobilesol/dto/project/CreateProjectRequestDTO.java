@@ -40,7 +40,7 @@ public record CreateProjectRequestDTO(
     @Size(max = 255)
     String utilityCompany,
 
-    @NotEmpty
+    @NotNull
     ProjectStatus status,
 
     LocalDate constructionStartDate,
