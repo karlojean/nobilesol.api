@@ -6,14 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "projects")
 public class Project extends Auditable {
     @Id
@@ -59,9 +56,7 @@ public class Project extends Auditable {
     @Column(name = "utility_company")
     private String utilityCompany;
 
-    @Size(max = 20)
     @NotNull
-    @ColumnDefault("'planning'")
     @Column(name = "project_status", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS projects (
     peak_power_wp BIGINT NOT NULL,
     business_model VARCHAR(20) NOT NULL CHECK (business_model IN ('traditional', 'fractional')),
     utility_company VARCHAR(255),
-    project_status VARCHAR(20) NOT NULL DEFAULT 'planning' CHECK (project_status IN ('planning', 'under_construction', 'commissioning', 'operational', 'decommissioned')),
+    project_status VARCHAR(20) NOT NULL DEFAULT 'PLANNING' CHECK (project_status IN ('PLANNING', 'UNDER_CONSTRUCTION', 'COMMISSIONING', 'OPERATIONAL', 'DECOMMISSIONED')),
     construction_start_date DATE,
     commercial_operation_date DATE,
     expected_annual_generation_wh BIGINT,
